@@ -1,0 +1,366 @@
+@import '../../styles/variables.scss';
+
+.model-generate {
+  &__container {
+    display: flex;
+    gap: 24px;
+    height: calc(100vh - $header-height - $footer-height - 60px); // 自适应高度
+
+    @media (max-width: 1200px) {
+      flex-direction: column;
+      height: auto;
+    }
+  }
+
+  // 左侧参数区
+  &__left {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    @media (max-width: 1200px) {
+      width: 100%;
+    }
+  }
+
+  &__param-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+  }
+
+  &__param-label {
+    font-size: 12px;
+    color: $text-light-color;
+    margin-bottom: 8px;
+  }
+
+  &__upload-area {
+    border: 1px dashed $border-color;
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: $primary-color;
+    }
+  }
+
+  &__upload-preview {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  &__upload-img {
+    width: 100%;
+    height: auto;
+  }
+
+  &__upload-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__desc-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: none;
+    min-height: 80px;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+  }
+
+  &__desc-count {
+    font-size: 12px;
+    color: $text-light-color;
+    text-align: right;
+    margin: 4px 0 0 0;
+  }
+
+  &__style-options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  &__style-option {
+    width: calc(33.333% - 8px);
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      border-color: $primary-color;
+    }
+
+    &--active {
+      border-color: $primary-color;
+      background-color: rgba(24, 144, 255, 0.05);
+    }
+  }
+
+  &__style-thumbnail {
+    width: 100%;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 4px;
+  }
+
+  &__style-label {
+    font-size: 12px;
+    color: $text-color;
+  }
+
+  &__generate-btn {
+    margin-top: 16px;
+  }
+
+  &__history-card {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  &__history-item {
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: $bg-color;
+    }
+  }
+
+  // 中间模型展示区
+  &__middle {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+
+    @media (max-width: 1200px) {
+      height: 500px;
+    }
+  }
+
+  &__model-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__control-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid $border-color;
+    margin-bottom: 16px;
+  }
+
+  &__control-btn {
+    border: 1px solid $border-color !important;
+    color: $text-color !important;
+  }
+
+  &__model-canvas {
+    flex: 1;
+    border-radius: 4px;
+    background-color: #f5f5f5;
+    position: relative;
+    overflow: hidden;
+
+    &--fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 1001;
+    }
+  }
+
+  &__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+
+  &__name-tag {
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: $text-color;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  // 右侧编辑区
+  &__right {
+    width: 320px;
+
+    @media (max-width: 1200px) {
+      width: 100%;
+    }
+  }
+
+  &__edit-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__edit-tabs {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+
+  &__edit-item {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid $border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__edit-label {
+    font-size: 12px;
+    color: $text-light-color;
+    margin-bottom: 8px;
+  }
+
+  &__color-picker {
+    width: 100%;
+    height: 32px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+  }
+
+  &__annotation-input-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  &__annotation-input {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+    }
+  }
+
+  &__action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  &__action-btn {
+    width: 100%;
+  }
+
+  &__empty-card {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+// 添加上传蒙版相关样式
+.model-generate__upload-preview {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #e8e8e8;
+  
+  .model-generate__upload-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #f5f5f5;
+  }
+  
+  // 蒙版样式
+  .model-generate__upload-mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+  }
+  
+  .model-generate__upload-remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20; // 确保删除按钮在蒙版上方
+    
+    &:hover {
+      background: #ff4d4f;
+      color: white;
+    }
+    
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: rgba(0,0,0,0.3);
+    }
+  }
+}

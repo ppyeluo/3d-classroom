@@ -1,0 +1,13 @@
+@import '../../styles/variables.scss';
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__content {
+    flex: 1;
+    padding-top: calc($header-height + 20px); // 避开固定导航栏
+    padding-bottom: 20px;
+  }
+}
