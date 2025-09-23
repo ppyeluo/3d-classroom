@@ -1,0 +1,110 @@
+@import '../../styles/variables.scss';
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: $header-height;
+  background-color: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: $primary-color;
+    text-decoration: none;
+
+    &-icon {
+      width: 34px;
+      height: 23px;
+    }
+
+    &-text {
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    gap: 32px;
+
+    &-item {
+      position: relative;
+      padding: 0 4px;
+      font-size: 14px;
+      color: $text-color;
+      text-decoration: none;
+      transition: color 0.2s;
+
+      &:hover {
+        color: $primary-color;
+      }
+
+      &--active {
+        color: $primary-color;
+        font-weight: 500;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 0;
+          width: 100%;
+          height: 2px;
+          background-color: $primary-color;
+          border-radius: 1px;
+        }
+      }
+    }
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: $bg-color;
+    }
+  }
+
+  &__user-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  &__user-name {
+    font-size: 14px;
+    color: $text-color;
+  }
+
+  &__auth-buttons {
+    display: flex;
+    gap: 12px;
+
+    &-btn {
+      font-size: 14px;
+    }
+  }
+}

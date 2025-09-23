@@ -1,0 +1,19 @@
+@import './variables.scss';
+@import "./resets.css";
+
+// 全局样式
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: $text-color;
+  background-color: $bg-color;
+}
+
+// 容器样式
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}

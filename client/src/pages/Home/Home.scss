@@ -1,0 +1,248 @@
+@import '../../styles/variables.scss';
+
+.home {
+  width: 100%;
+  overflow-x: hidden;
+  padding: 20px 0 40px;
+  box-sizing: border-box;
+}
+
+// 顶部标题区样式
+.home__title-area {
+  width: 100%;
+  padding: 20px 0 30px;
+  text-align: center;
+
+  &-content {
+    margin-bottom: 10px;
+  }
+}
+
+.home__main-title {
+  font-size: 36px !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+  color: $text-color !important;
+}
+
+.home__sub-title {
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  margin-bottom: 4px !important;
+  color: $text-color !important;
+}
+
+.home__assistant-desc {
+  font-size: 14px !important;
+  color: $text-light-color !important;
+}
+
+// 输入区域样式
+.home__input-area {
+  margin: 0 0 40px;
+}
+
+.home__input-wrapper {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid $border-color;
+  border-radius: 12px;
+  padding: 10px;
+  max-width: 1000px;
+  margin: 0 auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+// 上传区域样式
+.home__upload-container {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  color: $primary-color;
+}
+
+.home__upload-btn {
+  cursor: pointer;
+  padding: 8px;
+}
+
+.home__upload-icon {
+  font-size: 24px;
+}
+
+// 图片预览样式
+.home__image-preview {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid $border-color;
+}
+
+.home__preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home__remove-img {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #ff4d4f;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-weight: bold;
+}
+
+// 大输入框样式
+.home__description-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $text-color;
+  padding: 12px 10px;
+  font-size: 15px;
+  resize: none;
+  min-height: 80px; // 确保能容纳两行多文字
+  font-family: inherit;
+  line-height: 1.5;
+
+  &::placeholder {
+    color: $text-light-color;
+  }
+}
+
+// 生成按钮样式
+.home__generate-btn {
+  background-color: $primary-color !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  margin: 10px 5px !important;
+  min-width: 40px;
+}
+
+// 热门示例区域样式
+.home__hot-examples {
+  max-width: 1000px;
+  margin: 15px auto 0;
+  overflow-x: auto;
+  padding: 5px 0;
+}
+
+.home__examples-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-color;
+  margin-right: 8px;
+}
+
+.home__examples-list {
+  display: inline-flex;
+}
+
+.home__example-btn {
+  color: $primary-color !important;
+  padding: 4px 12px !important;
+  font-size: 12px !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba($primary-color, 0.2) !important;
+  white-space: nowrap;
+
+  &:hover {
+    background-color: rgba($primary-color, 0.05) !important;
+  }
+}
+
+// 功能卡片区域样式
+.home__features-cards {
+  margin: 20px 0 0;
+}
+
+.home__feature-card {
+  height: 100%;
+  border: none !important;
+  box-shadow: $card-shadow !important;
+  transition: all 0.3s;
+  border-radius: 10px !important;
+  overflow: hidden;
+  padding: 24px !important;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+  }
+}
+
+.home__feature-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: rgba($primary-color, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.home__feature-icon-inner {
+  font-size: 24px;
+  color: $primary-color;
+}
+
+.home__feature-title {
+  margin-bottom: 8px !important;
+  font-weight: 600 !important;
+  color: $text-color !important;
+}
+
+.home__feature-desc {
+  color: $text-light-color !important;
+  margin-bottom: 0 !important;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+// 容器样式
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+// 响应式调整
+@media (max-width: 768px) {
+  .home__input-wrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .home__upload-container {
+    justify-content: center;
+  }
+  
+  .home__image-preview {
+    margin: 0 auto;
+  }
+  
+  .home__generate-btn {
+    width: 100%;
+    margin: 0 !important;
+  }
+}
+    

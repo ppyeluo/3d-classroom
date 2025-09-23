@@ -1,0 +1,163 @@
+@import '../../styles/variables.scss';
+
+.material-market {
+  &__header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  &__title {
+    font-size: 28px;
+    color: $text-color;
+    margin-bottom: 8px;
+  }
+
+  &__desc {
+    font-size: 16px;
+    color: $text-light-color;
+    margin: 0;
+  }
+
+  &__filters {
+    background-color: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: $card-shadow;
+    margin-bottom: 24px;
+  }
+
+  &__filter-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  &__content {
+    margin-top: 24px;
+  }
+
+  &__loading {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__empty {
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: $card-shadow;
+    font-size: 16px;
+    color: $text-light-color;
+  }
+
+  &__model-card {
+    height: 100%;
+    border: none !important;
+    box-shadow: $card-shadow !important;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+  }
+
+  &__model-thumbnail {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+  }
+
+  &__model-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+
+    .material-market__model-card:hover & {
+      transform: scale(1.05);
+    }
+  }
+
+  &__model-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 8px;
+  }
+
+  &__model-action-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: $text-color;
+    border: none;
+
+    &:hover {
+      background-color: #fff;
+    }
+
+    &--favorite {
+      color: #faad14;
+    }
+  }
+
+  &__model-info {
+    padding: 12px;
+  }
+
+  &__model-name {
+    font-size: 16px;
+    margin: 0 0 8px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__model-desc {
+    font-size: 12px;
+    color: $text-light-color;
+    margin: 0 0 12px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 32px;
+  }
+
+  &__model-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 12px;
+  }
+
+  &__model-tag {
+    font-size: 12px !important;
+  }
+
+  &__model-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: $text-light-color;
+  }
+
+  &__pagination {
+    margin-top: 32px;
+    text-align: center;
+  }
+}
