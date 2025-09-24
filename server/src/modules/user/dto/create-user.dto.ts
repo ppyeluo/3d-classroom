@@ -1,34 +1,22 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsEmail, MinLength, MaxLength, IsOptional } from 'class-validator';
+import { IsString, IsMobilePhone, IsNotEmpty, Length } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty({ description: '用户名', example: 'teacher01' })
-  @IsString()
-  @MinLength(4)
-  @MaxLength(20)
-  username: string;
+  @IsMobilePhone('zh-CN', {}, { message: '请输入正确的手机号' })
+  phone: string;
 
-  @ApiProperty({ description: '邮箱', example: 'teacher@school.com' })
-  @IsEmail()
-  email: string;
+  @IsString({ message: '姓名必须为字符串' })
+  @IsNotEmpty({ message: '姓名不能为空' })
+  name: string;
 
-  @ApiProperty({ description: '密码（至少6位）', example: 'password123' })
-  @IsString()
-  @MinLength(6)
+  @IsString({ message: '学科必须为字符串' })
+  @IsNotEmpty({ message: '学科不能为空' })
+  subject: string;
+
+  @IsString({ message: '学段必须为字符串' })
+  @IsNotEmpty({ message: '学段不能为空' })
+  grade: string;
+
+  @IsString({ message: '密码必须为字符串' })
+  @Length(6, 20, { message: '密码长度需在 6-20 位之间' })
   password: string;
-
-  @ApiProperty({ description: '教师姓名', example: '张老师', required: false })
-  @IsOptional()
-  @IsString()
-  fullName?: string;
-
-  @ApiProperty({ description: '所属学校', example: '阳光小学', required: false })
-  @IsOptional()
-  @IsString()
-  school?: string;
-
-  @ApiProperty({ description: '教授学科', example: '数学', required: false })
-  @IsOptional()
-  @IsString()
-  subject?: string;
 }

@@ -1,30 +1,37 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import { AssetEntity } from '../../material-market/entities/asset.entity';
 
-@Entity('users')
-export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+@Entity('user')
+export class UserEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ unique: true, comment: '用户名' })
-  username: string;
+  @Column({ unique: true, comment: '手机号' })
+  phone: string;
 
-  @Column({ unique: true, comment: '邮箱' })
-  email: string;
+  @Column({ comment: '姓名' })
+  name: string;
 
-  @Column({ comment: '密码（加密存储）' })
-  password: string;
-
-  @Column({ nullable: true, comment: '教师姓名' })
-  fullName: string;
-
-  @Column({ nullable: true, comment: '所属学校' })
-  school: string;
-
-  @Column({ nullable: true, comment: '教授学科' })
+  @Column({ comment: '学科（如：物理、数学）' })
   subject: string;
 
-  @Column({ default: true, comment: '账号是否激活' })
-  isActive: boolean;
+  @Column({ comment: '学段（如：初中、高中）' })
+  grade: string;
+
+  @Exclude()
+  @Column({ comment: '密码（BCrypt 加密）' })
+  password: string;
+
+  @Column({ default: true, comment: '账号是否启用' })
+  isEnabled: boolean;
+
+  @Column({ default: false, comment: '是否为管理员' })
+  isAdmin: boolean;
+
+  // 添加与素材的一对多关联
+  @OneToMany(() => AssetEntity, (asset) => asset.uploader)
+  assets: AssetEntity[];
 
   @CreateDateColumn({ comment: '创建时间' })
   createdAt: Date;
