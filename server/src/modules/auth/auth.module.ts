@@ -4,7 +4,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { RolesGuard, Roles } from './roles.guard';
 import { UserModule } from '../user/user.module';
 import { getJwtConfig } from '../../config/jwt.config';
 
@@ -18,6 +17,6 @@ import { getJwtConfig } from '../../config/jwt.config';
     UserModule, // 导入 UserModule，使用 UserService
   ],
   providers: [JwtStrategy, JwtAuthGuard],
-  exports: [JwtAuthGuard, JwtAuthGuard, RolesGuard, Roles], // 导出守卫，供其他模块使用
+  exports: [JwtAuthGuard], // 导出守卫，供其他模块使用
 })
 export class AuthModule {}
