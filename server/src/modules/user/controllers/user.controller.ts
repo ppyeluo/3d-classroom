@@ -14,7 +14,7 @@ export interface RequestWithUser extends ExpressRequest {
   };
 }
 
-@Controller('api/user')
+@Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 

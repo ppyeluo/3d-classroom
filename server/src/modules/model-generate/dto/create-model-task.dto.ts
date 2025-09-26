@@ -1,13 +1,49 @@
-import { IsString, IsNotEmpty, Length } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateIf, MaxLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
+/**
+ * 模型生成类型枚举（对应Tripo3D API的task.type字段）
+ */
+export enum ModelGenerateType {
+  TEXT_TO_MODEL = 'text_to_model', // 文本生成3D模型
+  IMAGE_TO_MODEL = 'image_to_model'  // 图片生成3D模型
+}
+
+/**
+ * 模型生成风格枚举（仅图片生成可用）
+ */
+export enum GenerateStyle {
+  CARTOON = 'cartoon',         // 卡通简洁
+  REALISTIC = 'realistic',     // 写实逼真
+  WIREFRAME = 'wireframe'      // 线框示意图
+}
+
+/**
+ * 创建模型生成任务的请求DTO
+ */
 export class CreateModelTaskDto {
-  @IsString({ message: '模型名称必须为字符串' })
-  @IsNotEmpty({ message: '模型名称不能为空' })
-  @Length(1, 100, { message: '模型名称长度需在1-100位之间' })
-  name: string;
+  @IsEnum(ModelGenerateType, { 
+    message: '生成类型必须是 text_to_model 或 image_to_model' 
+  })
+  generateType: ModelGenerateType;
 
-  @IsString({ message: '模型描述必须为字符串' })
-  @IsNotEmpty({ message: '模型描述不能为空' })
-  @Length(10, 500, { message: '模型描述需详细一些（10-500字）' })
-  description: string;
+  @ValidateIf((dto) => dto.generateType === ModelGenerateType.TEXT_TO_MODEL)
+  @IsString({ message: '文本提示词必须是字符串' })
+  @MaxLength(1024, { message: '提示词长度不能超过1024字符' })
+  prompt: string;
+
+  @ValidateIf((dto) => dto.generateType === ModelGenerateType.IMAGE_TO_MODEL)
+  @IsString({ message: '图片Token必须是字符串' })
+  imageToken: string;
+
+  @ValidateIf((dto) => dto.generateType === ModelGenerateType.IMAGE_TO_MODEL)
+  @IsEnum(GenerateStyle, { 
+    message: '生成风格必须是 cartoon、realistic 或 wireframe' 
+  })
+  @IsOptional()
+  style?: GenerateStyle;
+
+  @IsOptional()
+  @IsString({ message: '模型版本必须是字符串' })
+  modelVersion?: 'Turbo-v1.0-20250506' | 'v3.0-20250812' | 'v2.5-20250123' | 'v2.0-20240919' = 'v2.5-20250123';
 }

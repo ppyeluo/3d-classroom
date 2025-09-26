@@ -1,57 +1,68 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
-import { UserEntity } from '../../user/entities/user.entity';
+import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { ModelGenerateType } from '../dto/create-model-task.dto';
 
-export enum ModelTaskStatus {
-  PENDING = 'pending',      // 等待中
-  PROCESSING = 'processing',// 处理中
-  COMPLETED = 'completed',  // 完成
-  FAILED = 'failed'         // 失败
+// 修复：定义任务输出的具体类型
+export interface TaskOutput {
+  model?: string;
+  base_model?: string;
+  pbr_model?: string;
+  rendered_image?: string;
+  qiniu_output?: {
+    model?: string;
+    pbr_model?: string;
+    rendered_image?: string;
+  };
 }
 
-@Entity('model_task', {
-  comment: '3D模型生成任务表'
-})
+@Entity('model_tasks')
 export class ModelTaskEntity {
-  @PrimaryGeneratedColumn('uuid', {
-    comment: '任务ID'
-  })
+  @PrimaryColumn({ type: 'varchar', length: 36, comment: '本地任务ID（UUID）' })
   id: string;
 
-  @Column({ comment: '模型名称' })
-  name: string;
-
-  @Column({ type: 'text', comment: '模型描述/生成提示词' })
-  description: string;
+  @Column({ type: 'varchar', length: 36, comment: '任务所属用户ID' })
+  userId: string;
 
   @Column({ 
-    type: 'enum', 
-    enum: ModelTaskStatus, 
-    default: ModelTaskStatus.PENDING,
-    comment: '任务状态' 
+    type: 'varchar', 
+    length: 20, 
+    comment: '任务类型：text_to_model（文本）、image_to_model（图片）' 
   })
-  status: ModelTaskStatus;
+  type: ModelGenerateType;
 
-  @Column({ nullable: true, comment: 'Tripo3D任务ID' })
+  @Column({ type: 'varchar', length: 64, nullable: true, comment: 'Tripo3D平台任务ID' })
   tripoTaskId: string;
 
-  @Column({ nullable: true, type: 'text', comment: '生成的模型URL' })
-  modelUrl: string;
-
-  @Column({ nullable: true, type: 'text', comment: '错误信息' })
-  errorMessage: string;
-
-  @Column({ nullable: true, comment: '模型缩略图URL' })
-  thumbnailUrl: string;
-
-  // 移除关系装饰器中的comment属性
-  @ManyToOne(() => UserEntity, user => user.id, {
-    onDelete: 'CASCADE' // 当用户删除时，关联的任务也删除
+  @Column({ 
+    type: 'varchar', 
+    length: 20, 
+    default: 'queued', 
+    comment: '任务状态：queued（排队）、running（运行）、success（成功）、failed（失败）、banned（封禁）、expired（过期）、cancelled（取消）、unknown（未知）' 
   })
-  user: UserEntity;
+  status: 'queued' | 'running' | 'success' | 'failed' | 'banned' | 'expired' | 'cancelled' | 'unknown';
 
-  @CreateDateColumn({ comment: '创建时间' })
-  createdAt: Date;
+  @Column({ type: 'int', default: 0, comment: '任务进度（0-100）' })
+  progress: number;
 
-  @UpdateDateColumn({ comment: '更新时间' })
-  updatedAt: Date;
+  @Column({ type: 'text', nullable: true, comment: '文本生成提示词（仅text_to_model任务）' })
+  prompt: string;
+
+  @Column({ type: 'varchar', length: 20, nullable: true, comment: '生成风格（仅image_to_model任务）' })
+  style: string;
+
+  // 修复：指定output的具体类型
+  @Column({ 
+    type: 'jsonb', 
+    nullable: true, 
+    comment: '任务输出结果：包含Tripo3D原始输出和七牛云转存地址' 
+  })
+  output: TaskOutput;
+
+  @Column({ type: 'text', nullable: true, comment: '任务错误信息（失败时存储）' })
+  errorMsg: string;
+
+  @Column({ type: 'bigint', comment: '任务创建时间（时间戳，秒级）' })
+  createTime: number;
+
+  @Column({ type: 'bigint', nullable: true, comment: '任务更新时间（时间戳，秒级）' })
+  updateTime: number;
 }
