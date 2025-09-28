@@ -1,5 +1,5 @@
 import { Controller, Post, Get, Param, Body, UseGuards, Request, Query, UploadedFile, UseInterceptors, BadRequestException, Req } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiParam, ApiBody, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiParam, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ModelTaskService } from '../services/model-task.service';
 import { CreateModelTaskDto } from '../dto/create-model-task.dto';
@@ -8,6 +8,8 @@ import { FastifyRequest } from 'fastify';
 import { QueryModelTasksDto } from '../dto/query-model-tasks.dto';
 import { TaskListResponse } from '../dto/task-list-response.dto';
 import { UploadImageDto, ALLOWED_IMAGE_MIME_TYPES } from '../dto/upload-image.dto';
+import { QueryHistoryModelsDto } from '../dto/query-history-models.dto';
+import { HistoryModelsResponse } from '../dto/history-models-response.dto';
 
 @ApiTags('模型任务管理')
 @Controller('model-tasks')
@@ -102,5 +104,15 @@ export class ModelTaskController {
       imageToken,
       message: '图片上传成功，可用于创建图片生成模型任务',
     };
+  }
+   @Get('history-models')
+  @ApiOperation({ summary: '查询用户历史生成模型记录（含七牛云3D模型地址与缩略图）' })
+  @ApiQuery({ type: QueryHistoryModelsDto })
+  @ApiResponse({ status: 200, description: '历史记录查询成功', type: HistoryModelsResponse })
+  async getUserHistoryModels(
+    @Request() req: FastifyRequest & { user: { id: string } }, // 从JWT提取用户ID
+    @Query() queryDto: QueryHistoryModelsDto,
+  ) {
+    return this.modelTaskService.getUserHistoryModels(req.user.id, queryDto);
   }
 }

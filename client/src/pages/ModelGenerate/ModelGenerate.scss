@@ -2,19 +2,14 @@
 
 .model-generate {
   &__container {
-    display: flex;
-    gap: 24px;
-    height: calc(100vh - $header-height - $footer-height - 60px); // 自适应高度
-
-    @media (max-width: 1200px) {
-      flex-direction: column;
-      height: auto;
-    }
+    position: relative;
+    // display: flex;
+    // gap: 24px;
   }
 
   // 左侧参数区
   &__left {
-    width: 320px;
+    width: 360px;
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -228,11 +223,8 @@
 
   // 右侧编辑区
   &__right {
-    width: 320px;
+    width: 300px;
 
-    @media (max-width: 1200px) {
-      width: 100%;
-    }
   }
 
   &__edit-card {
@@ -363,4 +355,24 @@
       background: rgba(0,0,0,0.3);
     }
   }
+}
+.model-middle-container {
+  /* 1. 控制容器尺寸：占满父容器中间区域 */
+  width: 100%; /* 宽度铺满中间父容器 */
+  height: 80vh; /* 高度占视口 80%（或根据中间区域高度设置，如 600px） */
+  min-height: 500px; /* 最小高度，避免容器过小 */
+  margin: 0 auto; /* 水平居中，确保在中间位置 */
+  
+  /* 2. 确保 Canvas 填充容器 */
+  position: relative; /* 子元素绝对定位的父容器 */
+}
+
+/* Three.js Canvas：填充容器 */
+.model-middle-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important; /* 覆盖默认尺寸，占满容器宽度 */
+  height: 100% !important; /* 覆盖默认尺寸，占满容器高度 */
+  display: block;
 }

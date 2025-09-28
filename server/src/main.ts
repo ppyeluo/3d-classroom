@@ -33,7 +33,7 @@ async function bootstrap() {
   );
 
   const configService = app.get(ConfigService);
-  const allowedOrigins = configService.get<string>('CORS_ALLOWED_ORIGINS', 'http://localhost:3001').split(',');
+  const allowedOrigins = configService.get<string>('CORS_ALLOWED_ORIGINS', 'http://localhost:5173').split(',');
 
   app.enableCors({
     origin: allowedOrigins,
@@ -44,8 +44,8 @@ async function bootstrap() {
 
   await app.register(multipart, {
     limits: {
-      fileSize: 10 * 1024 * 1024, // 限制文件大小为 10MB
-      files: 1 // 限制单次上传 1 个文件
+      fileSize: 50 * 1024 * 1024, // 限制文件大小为 10MB
+      files: 10 // 允许单次上传 2 个文件
     }
   });
 

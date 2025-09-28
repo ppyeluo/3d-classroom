@@ -1,6 +1,5 @@
 // src/app.module.ts
 import { Module, Global } from '@nestjs/common'; // 新增Global导入
-// ...其他原有导入
 import { QiniuUtil } from './utils/qiniu.util'; // 导入七牛云工具
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -13,6 +12,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ModelGenerateModule } from './modules/model-generate/model-generate.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { MaterialMarketModule } from './modules/material-market/material-market.module'; // 新增导入
 
 // 全局注册七牛云工具
 @Global()
@@ -55,6 +55,7 @@ class QiniuGlobalModule {}
     UserModule,
     AuthModule,
     ModelGenerateModule,
+    MaterialMarketModule,
   ],
   controllers: [],
   providers: [

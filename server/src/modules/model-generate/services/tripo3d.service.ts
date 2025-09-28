@@ -143,8 +143,13 @@ export class Tripo3dService {
       if (style) {
         const styleMap: Record<GenerateStyle, string> = {
           [GenerateStyle.CARTOON]: 'person:person2cartoon',
-          [GenerateStyle.REALISTIC]: 'object:realistic',
-          [GenerateStyle.WIREFRAME]: 'object:wireframe',
+          [GenerateStyle.CLAY]: 'object:clay',
+          [GenerateStyle.STEAMPUNK]: 'object:steampunk',
+          [GenerateStyle.VENOM]: 'animal:venom',
+          [GenerateStyle.BARBIE]: 'object:barbie',
+          [GenerateStyle.CHRISTMAS]: 'object:christmas',
+          [GenerateStyle.GOLD]: 'gold',
+          [GenerateStyle.ANCIENT_BRONZE]: 'ancient_bronze'
         };
         requestBody.style = styleMap[style];
         this.logger.log(`图片生成任务设置风格 | 风格: ${requestBody.style}`);

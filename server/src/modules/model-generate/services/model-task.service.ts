@@ -11,6 +11,8 @@ import { UserService } from '../../user/services/user.service';
 import { ModelTaskEntity, TaskOutput } from '../entities/model-task.entity'; // 导入TaskOutput类型
 import { TaskListResponse } from '../dto/task-list-response.dto';
 import { QiniuUtil } from '../../../utils/qiniu.util';
+import { HistoryModelItem, HistoryModelsResponse } from '../dto/history-models-response.dto';
+import { QueryHistoryModelsDto } from '../dto/query-history-models.dto';
 
 export const MODEL_GENERATE_QUEUE = 'model-generate-queue';
 export const POLL_TASK_STATUS_JOB = 'poll-task-status';
@@ -290,5 +292,76 @@ export class ModelTaskService {
     );
     this.logger.log(`任务标记为失败 | taskId: ${taskId} | 错误信息: ${errorMsg}`);
   }
+  /**
+   * 查询用户历史生成模型记录（仅返回成功的任务，含七牛云地址）
+   * @param userId 用户ID（从JWT令牌提取）
+   * @param queryDto 分页与筛选参数
+   */
+async getUserHistoryModels(
+  userId: string,
+  queryDto: QueryHistoryModelsDto,
+): Promise<HistoryModelsResponse> {
+  const { page, pageSize, generateType } = queryDto;
+  const skip = page * pageSize;
+
+  // 1. 构建查询条件（仅查成功且有七牛云地址的任务）
+  const queryBuilder = this.modelTaskRepo.createQueryBuilder('task')
+    .where('task.userId = :userId', { userId })
+    .andWhere('task.status = :status', { status: 'success' })
+    .andWhere('task.output IS NOT NULL')
+    .andWhere('task.output->>\'qiniu_output\' IS NOT NULL');
+
+  if (generateType) {
+    queryBuilder.andWhere('task.type = :generateType', { generateType });
+  }
+
+  // 2. 执行分页查询
+  const [tasks, total] = await queryBuilder
+    .select([
+      'task.id',
+      'task.type',
+      'task.prompt',
+      'task.output',
+      'task.createTime',
+    ])
+    .orderBy('task.createTime', 'DESC')
+    .skip(skip)
+    .take(pageSize)
+    .getManyAndCount();
+
+  // 3. 格式化数据：严格匹配 HistoryModelItem 类型，过滤无效数据
+  const formattedList: (HistoryModelItem | null)[] = tasks.map(task => {
+    const qiniuOutput = task.output?.qiniu_output || {};
+    // 提取有效地址（确保非undefined）
+    const modelUrl = qiniuOutput.pbr_model || qiniuOutput.model;
+    const thumbnailUrl = qiniuOutput.rendered_image;
+
+    // 若地址缺失，返回null（后续过滤）
+    if (!modelUrl || !thumbnailUrl) {
+      this.logger.warn(`任务地址缺失，跳过 | taskId: ${task.id}`);
+      return null;
+    }
+
+    // 若prompt为null/undefined，用空字符串兜底（匹配 HistoryModelItem 的 prompt: string 类型）
+    const prompt = task.prompt ?? '';
+
+    // 返回严格符合 HistoryModelItem 类型的数据
+    return {
+      taskId: task.id,
+      generateType: task.type as ModelGenerateType, // 断言为合法的生成类型
+      prompt: prompt, // 已确保是string（非undefined）
+      modelUrl: modelUrl, // 已确保是string（非undefined）
+      thumbnailUrl: thumbnailUrl, // 已确保是string（非undefined）
+      createTime: task.createTime, // 数据库是bigint，TypeORM自动转为number
+    } as HistoryModelItem; // 显式断言为 HistoryModelItem，消除类型歧义
+  });
+
+  // 4. 过滤null，并用类型谓词明确告诉TS：过滤后是 HistoryModelItem[]
+  const list: HistoryModelItem[] = formattedList.filter(
+    (item): item is HistoryModelItem => item !== null
+  );
+
+  return { total, page, pageSize, list };
+}
 }
     

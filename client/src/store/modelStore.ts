@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 // 模型类型定义
 export interface ModelInfo {
+  generateType?: string;
   id: string;
   name: string;
   description: string;

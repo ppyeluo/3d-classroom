@@ -13,9 +13,14 @@ export enum ModelGenerateType {
  * 模型生成风格枚举（仅图片生成可用）
  */
 export enum GenerateStyle {
-  CARTOON = 'cartoon',         // 卡通简洁
-  REALISTIC = 'realistic',     // 写实逼真
-  WIREFRAME = 'wireframe'      // 线框示意图
+  CARTOON = 'cartoon',         // 卡通风格
+  CLAY = 'clay',               // 黏土质感
+  STEAMPUNK = 'steampunk',     // 蒸汽朋克
+  VENOM = 'venom',             // 毒液风格
+  BARBIE = 'barbie',           // 芭比风尚
+  CHRISTMAS = 'christmas',     // 圣诞主题
+  GOLD = 'gold',               // 金色质感
+  ANCIENT_BRONZE = 'ancient_bronze'  // 古铜风格
 }
 
 /**
@@ -38,7 +43,7 @@ export class CreateModelTaskDto {
 
   @ValidateIf((dto) => dto.generateType === ModelGenerateType.IMAGE_TO_MODEL)
   @IsEnum(GenerateStyle, { 
-    message: '生成风格必须是 cartoon、realistic 或 wireframe' 
+    message: '生成风格不对' 
   })
   @IsOptional()
   style?: GenerateStyle;
