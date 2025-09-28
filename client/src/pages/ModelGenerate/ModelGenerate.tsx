@@ -203,6 +203,8 @@ const GenerateLoading = ({ status, progress }: { status: TaskStatus, progress: n
 const ModelGenerate = () => {
   
 const navigate = useNavigate();
+
+
   // 6. 核心状态（含生成后禁用控制）
   const [isUploading, setIsUploading] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);

@@ -16,6 +16,7 @@ import type {
 } from '../../types/materialType';
 import './MaterialMarket.scss';
 import defaultImg from '../../assets/default.png';
+import ModelModal from '../../components/ModelModal'; // 导入模态框组件
 
 const { Option } = Select;
 const { Search } = Input;
@@ -35,12 +36,14 @@ const subjectOptions = [
 const MaterialMarket = () => {
   const navigate = useNavigate();
   
+  const [isModelModalVisible, setIsModelModalVisible] = useState(false);
+  const [currentModelUrl, setCurrentModelUrl] = useState('');
   // 原有状态保留
   const [models, setModels] = useState<MaterialModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(8);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>({});
@@ -146,8 +149,10 @@ const MaterialMarket = () => {
     }
   };
 
-  const handleViewDetail = (id: string) => {
-    navigate(`/model-lab?id=${id}`);
+  const handleViewDetail = (thumbnailUrl: string) => {
+    const glbUrl = thumbnailUrl.replace(/\.png$/, '.glb');
+    setCurrentModelUrl(glbUrl);
+    setIsModelModalVisible(true);
   };
 
   // 新增：上传素材逻辑
@@ -229,6 +234,10 @@ const MaterialMarket = () => {
 
   return (
     <div className="material-market">
+        {isModelModalVisible && (
+      <ModelModal modelUrl={currentModelUrl}
+        visible={isModelModalVisible} onClose={() => setIsModelModalVisible(false)} />
+            )}
       {/* 页面头部：新增“上传素材”按钮 */}
       <div className="material-market__header">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -328,7 +337,7 @@ const MaterialMarket = () => {
                         </div>
                       </div>
                     }
-                    onClick={() => handleViewDetail(model.id)}
+                    onClick={() => handleViewDetail(model.thumbnailUrl)}
                   >
                     <div className="material-market__model-info">
                       {/* <h3 className="material-market__model-name">{model.name}</h3>
@@ -345,11 +354,11 @@ const MaterialMarket = () => {
                       </div> */}
                       <div className="material-market__model-stats">
                         <span className="material-market__model-stat">
-                          下载: {model.downloadCount}
+                          下载量: {model.downloadCount}
                         </span>
-                        <span className="material-market__model-stat">
+                        {/* <span className="material-market__model-stat">
                           浏览: {model.viewCount}
-                        </span>
+                        </span> */}
                         <span className="material-market__model-stat">
                           上传: {new Date(model.createTime * 1000).toLocaleDateString()}
                         </span>
@@ -359,21 +368,26 @@ const MaterialMarket = () => {
                 </Col>
               ))}
             </Row>
-            <div className="material-market__pagination">
+            <div className="material-market__pagination" style={{
+              position: 'absolute',
+              color:'#E76F00',
+              left: '40%',
+              bottom: '40px',
+              width:'300px'
+            }}>
               <Pagination
                 current={page + 1}
                 pageSize={pageSize}
                 total={total}
                 onChange={(p) => setPage(p - 1)}
-                onShowSizeChange={(_, size) => {
-                  setPageSize(size);
-                  setPage(0);
-                }}
-                showSizeChanger
-                showQuickJumper
-                showTotal={(total) => `共 ${total} 个模型`}
+                // onShowSizeChange={(_, size) => {
+                //   setPageSize(size);
+                //   setPage(0);
+                // }}
+                // showSizeChanger
+                // showQuickJumper
+                // showTotal={(total) => `共 ${total} 个模型`}
                 disabled={loading}
-                pageSizeOptions={['10', '20', '30', '50']}
               />
             </div>
           </>

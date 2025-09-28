@@ -161,3 +161,50 @@
     text-align: center;
   }
 }
+/* 全局 CSS 文件（如 src/styles/global.css） */
+/* 分页容器类名 + 组件内置类名，确保优先级高于默认样式 */
+.material-market__pagination .ant-pagination {
+  color: #E76F00; /* 全局字体颜色 */
+  font-weight: 600;
+}
+
+/* 页码按钮颜色 */
+.material-market__pagination .ant-pagination .ant-pagination-item {
+  color: #666;
+  background-color: #E76F00;
+}
+.material-market__pagination .ant-pagination .ant-pagination-item:hover {
+  color: #1890ff; /* hover 颜色 */
+}
+.material-market__pagination .ant-pagination .ant-pagination-item-active {
+  color: #fff; /* 选中状态文字颜色（通常配合背景色） */
+}
+
+/* 上一页/下一页按钮 */
+.material-market__pagination .ant-pagination .ant-pagination-prev,
+.material-market__pagination .ant-pagination .ant-pagination-next {
+  color: #E76F00;
+  background-color: #E76F00;
+}
+.material-market__pagination .ant-pagination .ant-pagination-prev:hover,
+.material-market__pagination .ant-pagination .ant-pagination-next:hover {
+  color: #1890ff;
+}
+.material-market__model-action-btn {
+  // 1. 去掉默认背景和边框
+  background: transparent !important; // 重置背景为透明
+  border: none !important; // 去掉默认边框（若有）
+  box-shadow: none !important; // 去掉默认阴影（若有）
+
+  // 4. 可选：调整图标颜色（默认继承文字颜色，可单独设置）
+  .anticon-download {
+    color: #666; // 默认图标颜色
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 50%;
+  }
+  &:hover .anticon-download {
+    color: #1890ff;
+    background-color: #faad14;
+  }
+}
