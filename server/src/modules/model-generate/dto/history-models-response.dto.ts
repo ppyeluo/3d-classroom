@@ -1,4 +1,3 @@
-// src/modules/model-generate/dto/history-models-response.dto.ts
 import { ApiProperty } from '@nestjs/swagger';
 import { ModelGenerateType } from './create-model-task.dto';
 
@@ -10,7 +9,7 @@ export class HistoryModelItem {
   @ApiProperty({ description: '生成类型（text_to_model：文本生成，image_to_model：图片生成）' })
   generateType: ModelGenerateType;
 
-  // 关键修改：允许 prompt 为空字符串（图片生成任务无prompt，文本生成任务有prompt）
+  // 允许 prompt 为空字符串（图片生成任务无prompt，文本生成任务有prompt）
   @ApiProperty({ description: '文本提示词（文本生成任务有值，图片生成任务为空字符串）' })
   prompt: string; // 保持string类型，但实际赋值时用空字符串兜底，避免undefined
 

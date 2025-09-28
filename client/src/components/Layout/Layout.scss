@@ -2,26 +2,26 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  overflow: hidden; /* 禁止整体滚动 */
+  overflow: hidden;
 }
 
 // 顶部导航栏固定高度
 .layout__header {
   height: 64px;
-  flex-shrink: 0; /* 不压缩 */
+  flex-shrink: 0;
 }
 
 // 内容区域 - 计算可用高度
 .layout__content {
   width: 100%;
-  overflow: hidden; /* 禁止内容滚动 */
-  padding: 0; /* 移除默认内边距 */
+  overflow: hidden;
+  padding: 0;
   box-sizing: border-box;
 }
 
 .container {
   width: 100%;
-  max-width: 1440px; /* 适合的最大宽度 */
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 16px;
   height: 100%;

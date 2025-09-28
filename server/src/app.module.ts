@@ -1,9 +1,8 @@
-// src/app.module.ts
-import { Module, Global } from '@nestjs/common'; // 新增Global导入
-import { QiniuUtil } from './utils/qiniu.util'; // 导入七牛云工具
+import { Module, Global } from '@nestjs/common';
+import { QiniuUtil } from './utils/qiniu.util';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BullModule } from '@nestjs/bull'; // 新增：导入任务队列模块
+import { BullModule } from '@nestjs/bull';
 import { JwtModule } from '@nestjs/jwt';
 import { getDatabaseConfig } from './config/database.config';
 import { getJwtConfig } from './config/jwt.config';
@@ -12,7 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ModelGenerateModule } from './modules/model-generate/model-generate.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { MaterialMarketModule } from './modules/material-market/material-market.module'; // 新增导入
+import { MaterialMarketModule } from './modules/material-market/material-market.module';
 
 // 全局注册七牛云工具
 @Global()
@@ -28,18 +27,18 @@ class QiniuGlobalModule {}
       isGlobal: true,
       envFilePath: '.env',
     }),
-    // 修复：TypeOrm配置（保持不变）
+    
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: getDatabaseConfig,
     }),
-    // 修复：Jwt配置（保持不变）
+    
     JwtModule.registerAsync({
       global: true,
       inject: [ConfigService],
       useFactory: getJwtConfig,
     }),
-    // 新增：Redis任务队列配置（用于模型生成任务管理）
+    // Redis任务队列配置（用于模型生成任务管理）
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({

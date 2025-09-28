@@ -1,5 +1,4 @@
 import { IsEnum, IsOptional, IsString, ValidateIf, MaxLength } from 'class-validator';
-import { Type } from 'class-transformer';
 
 /**
  * 模型生成类型枚举（对应Tripo3D API的task.type字段）

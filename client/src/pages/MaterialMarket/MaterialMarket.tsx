@@ -3,27 +3,27 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Input, Select, Card, Row, Col, Badge, Pagination, message, 
-  Spin, Button, Modal, Upload, Form, InputNumber // 新增：Form/Upload等组件
+  Spin, Button, Modal, Upload, Form, InputNumber
 } from 'antd';
 import { 
   SearchOutlined, DownloadOutlined, StarOutlined, StarFilled,
-  UploadOutlined, PlusOutlined // 新增：上传图标
+  UploadOutlined, PlusOutlined
 } from '@ant-design/icons';
 import materialApi from '../../api/materialApi';
 import type { 
   QueryMaterialsParams, MaterialModel, QueryMaterialsResponse,
-  CreateMaterialForm // 新增：创建素材表单类型
+  CreateMaterialForm
 } from '../../types/materialType';
 import './MaterialMarket.scss';
 import defaultImg from '../../assets/default.png';
-import ModelModal from '../../components/ModelModal'; // 导入模态框组件
+import ModelModal from '../../components/ModelModal';
 
 const { Option } = Select;
 const { Search } = Input;
 const { TextArea } = Input;
 const { Item } = Form;
 
-// 学科分类配置（原有代码保留）
+// 学科分类配置
 const subjectOptions = [
   { key: 'all', label: '全部学科' },
   { key: 'physics', label: '物理' },
@@ -36,9 +36,11 @@ const subjectOptions = [
 const MaterialMarket = () => {
   const navigate = useNavigate();
   
+  // 模型预览相关状态
   const [isModelModalVisible, setIsModelModalVisible] = useState(false);
   const [currentModelUrl, setCurrentModelUrl] = useState('');
-  // 原有状态保留
+  
+  // 素材列表相关状态
   const [models, setModels] = useState<MaterialModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
@@ -48,15 +50,16 @@ const MaterialMarket = () => {
   const [selectedSubject, setSelectedSubject] = useState('all');
   const [favoriteStatus, setFavoriteStatus] = useState<Record<string, boolean>>({});
 
-  // 新增：上传素材相关状态
-  const [uploadModalVisible, setUploadModalVisible] = useState(false); // 上传弹窗显示状态
-  const [form] = Form.useForm(); // 表单实例
-  const [uploadLoading, setUploadLoading] = useState(false); // 上传按钮加载状态
+  // 上传素材相关状态
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [form] = Form.useForm();
+  const [uploadLoading, setUploadLoading] = useState(false);
 
-  // 原有：加载素材列表（保留）
+  // 获取素材列表数据
   const fetchMaterials = async () => {
     setLoading(true);
     try {
+      // 构建请求参数，过滤空值
       const params: QueryMaterialsParams = {
         page: page,
         pageSize: pageSize,
@@ -67,6 +70,7 @@ const MaterialMarket = () => {
       setModels(res.list);
       setTotal(res.total);
       
+      // 初始化收藏状态
       const initFavorites: Record<string, boolean> = {};
       res.list.forEach(model => {
         initFavorites[model.id] = false;
@@ -82,12 +86,12 @@ const MaterialMarket = () => {
     }
   };
 
-  // 原有：初始化加载（保留）
+  // 监听分页、筛选条件变化，重新加载数据
   useEffect(() => {
     fetchMaterials();
   }, [page, pageSize, selectedSubject, searchKeyword]);
 
-  // 原有：搜索/学科切换/收藏/下载/查看详情（保留）
+  // 全局搜索事件监听
   useEffect(() => {
     const handleSearch = (e: CustomEvent) => {
       setSearchKeyword(e.detail);
@@ -99,18 +103,22 @@ const MaterialMarket = () => {
     };
   }, []);
 
+  // 搜索处理
   const handleSearch = (value: string) => {
     setSearchKeyword(value);
     setPage(0);
   };
 
+  // 学科筛选处理
   const handleSubjectChange = (value: string) => {
     setSelectedSubject(value);
     setPage(0);
   };
 
+  // 收藏状态切换
   const handleFavorite = async (id: string, isFavorite: boolean) => {
     try {
+      // 先更新UI状态，提升交互体验
       setFavoriteStatus(prev => ({
         ...prev,
         [id]: !isFavorite
@@ -122,10 +130,12 @@ const MaterialMarket = () => {
     }
   };
 
+  // 下载素材处理
   const handleDownload = async (materialId: string, modelName: string) => {
     try {
       setLoading(true);
       const res = await materialApi.downloadMaterial(materialId);
+      // 创建下载链接
       const link = document.createElement('a');
       link.href = res.modelUrl;
       link.download = modelName || `素材_${materialId}`;
@@ -133,6 +143,7 @@ const MaterialMarket = () => {
       link.click();
       document.body.removeChild(link);
       
+      // 更新下载计数（本地临时更新，优化体验）
       setModels(prev => 
         prev.map(model => 
           model.id === materialId 
@@ -149,19 +160,18 @@ const MaterialMarket = () => {
     }
   };
 
+  // 查看模型详情
   const handleViewDetail = (thumbnailUrl: string) => {
+    // 从缩略图URL推导模型文件URL
     const glbUrl = thumbnailUrl.replace(/\.png$/, '.glb');
     setCurrentModelUrl(glbUrl);
     setIsModelModalVisible(true);
   };
 
-  // 新增：上传素材逻辑
-  /**
-   * 1. 表单提交：收集表单数据，调用创建素材接口
-   */
+  // 提交上传素材表单
   const handleUploadSubmit = async () => {
     try {
-      // 1.1 校验表单（必填项检查）
+      // 表单校验
       const formValues = await form.validateFields();
       const { name, description, modelFile } = formValues as unknown as CreateMaterialForm;
 
@@ -170,27 +180,27 @@ const MaterialMarket = () => {
         return;
       }
 
-      // 1.2 构造FormData（文件上传必需格式）
+      // 构建表单数据
       const formData = new FormData();
-      formData.append('name', name.trim()); // 素材名称
-      if (description.trim()) formData.append('description', description.trim()); // 可选描述
-      formData.append('modelFile', modelFile); // 3D模型文件
+      formData.append('name', name.trim());
+      if (description.trim()) formData.append('description', description.trim());
+      formData.append('modelFile', modelFile);
 
-      // 1.3 调用接口上传素材
+      // 调用上传接口
       setUploadLoading(true);
-      const newMaterial = await materialApi.uploadMaterial(formData);
+      await materialApi.uploadMaterial(formData);
 
-      // 1.4 上传成功后更新列表
+      // 上传成功处理
       message.success('素材上传成功！');
-      setUploadModalVisible(false); // 关闭弹窗
-      form.resetFields(); // 重置表单
-      fetchMaterials(); // 重新加载素材列表
+      setUploadModalVisible(false);
+      form.resetFields();
+      fetchMaterials(); // 重新加载列表
     } catch (error: any) {
       console.error('素材上传失败:', error);
-      // 接口错误处理（匹配接口文档状态码）
+      // 错误处理
       if (error.response?.status === 401) {
         message.error('请先登录后再上传素材');
-        navigate('/'); // 跳转首页登录
+        navigate('/');
       } else if (error.response?.status === 413) {
         message.error('文件过大，最大支持50MB');
       } else {
@@ -201,32 +211,28 @@ const MaterialMarket = () => {
     }
   };
 
-  /**
-   * 2. 文件上传前校验（格式+大小）
-   */
+  // 上传前文件校验
   const beforeUpload = (file: File) => {
-    // 校验文件格式（仅支持glb，可根据需求扩展）
+    // 校验文件格式
     const isGLB = file.type === 'model/gltf-binary' || file.name.endsWith('.glb');
     if (!isGLB) {
       message.error('仅支持GLB格式的3D模型文件');
       return false;
     }
 
-    // 校验文件大小（≤50MB，与接口文档一致）
+    // 校验文件大小
     const isLt50M = file.size / 1024 / 1024 < 50;
     if (!isLt50M) {
       message.error('文件大小不能超过50MB');
       return false;
     }
 
-    // 手动触发Form表单值更新（Upload组件需手动同步文件到表单）
+    // 同步文件到表单
     form.setFieldValue('modelFile', file);
-    return false; // 关闭自动上传，通过表单提交统一触发
+    return false; // 关闭自动上传
   };
 
-  /**
-   * 3. 打开上传弹窗（重置表单）
-   */
+  // 打开上传弹窗
   const handleOpenUploadModal = () => {
     form.resetFields();
     setUploadModalVisible(true);
@@ -234,32 +240,39 @@ const MaterialMarket = () => {
 
   return (
     <div className="material-market">
-        {isModelModalVisible && (
-      <ModelModal modelUrl={currentModelUrl}
-        visible={isModelModalVisible} onClose={() => setIsModelModalVisible(false)} />
-            )}
-      {/* 页面头部：新增“上传素材”按钮 */}
+      {/* 模型预览模态框 */}
+      {isModelModalVisible && (
+        <ModelModal 
+          modelUrl={currentModelUrl}
+          visible={isModelModalVisible} 
+          onClose={() => setIsModelModalVisible(false)} 
+        />
+      )}
+      
+      {/* 页面头部 */}
       <div className="material-market__header">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ 
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          }}>
           <div>
             <h1 className="material-market__title">3D素材市场</h1>
             <p className="material-market__desc">
               浏览并下载优质教学3D模型，支持多学科分类检索
             </p>
           </div>
-          <Button
+          {/* <Button
             type="primary"
             icon={<UploadOutlined />}
             onClick={handleOpenUploadModal}
-            // 可根据登录状态控制显示（使用useUserStore）
-            // disabled={!isLogin}
           >
             上传素材
-          </Button>
+          </Button> */}
         </div>
       </div>
 
-      {/* 筛选与搜索区（原有代码保留） */}
+      {/* 筛选与搜索区 */}
       {/* <div className="material-market__filters">
         <div className="material-market__filter-group">
           <Select
@@ -287,13 +300,15 @@ const MaterialMarket = () => {
         </div>
       </div> */}
 
-      {/* 素材列表 */}
+      {/* 素材列表区域 */}
       <div className="material-market__content">
         {loading ? (
+          // 加载状态
           <div className="material-market__loading">
             <Spin size="large" tip="加载中..."></Spin>
           </div>
         ) : models.length > 0 ? (
+          // 素材列表
           <>
             <Row gutter={[24, 24]}>
               {models.map(model => (
@@ -307,6 +322,7 @@ const MaterialMarket = () => {
                           src={model.thumbnailUrl} 
                           alt={model.name} 
                           className="material-market__model-img"
+                          // 图片加载失败时显示默认图
                           onError={(e) => {
                             e.currentTarget.src = defaultImg;
                           }}
@@ -329,7 +345,7 @@ const MaterialMarket = () => {
                             size="small"
                             className="material-market__model-action-btn"
                             onClick={(e) => {
-                              e.stopPropagation();
+                              e.stopPropagation(); // 阻止事件冒泡到卡片
                               handleDownload(model.id, model.name);
                             }}
                             disabled={loading}
@@ -368,6 +384,8 @@ const MaterialMarket = () => {
                 </Col>
               ))}
             </Row>
+            
+            {/* 分页组件 */}
             <div className="material-market__pagination" style={{
               position: 'absolute',
               color:'#E76F00',
@@ -392,13 +410,14 @@ const MaterialMarket = () => {
             </div>
           </>
         ) : (
+          // 空状态
           <div className="material-market__empty">
             <p>未找到匹配的模型，请尝试其他搜索条件</p>
           </div>
         )}
       </div>
 
-      {/* 新增：上传素材弹窗 */}
+      {/* 上传素材弹窗 */}
       <Modal
         title="上传3D素材"
         visible={uploadModalVisible}
@@ -411,9 +430,9 @@ const MaterialMarket = () => {
         <Form
           form={form}
           layout="vertical"
-          initialValues={{ description: '' }} // 初始值
+          initialValues={{ description: '' }}
         >
-          {/* 素材名称（必传） */}
+          {/* 素材名称 */}
           <Item
             name="name"
             label="素材名称"
@@ -425,7 +444,7 @@ const MaterialMarket = () => {
             <Input placeholder="请输入素材名称（如：初中物理-杠杆模型）" />
           </Item>
 
-          {/* 素材描述（可选） */}
+          {/* 素材描述 */}
           <Item
             name="description"
             label="素材描述"
@@ -439,7 +458,7 @@ const MaterialMarket = () => {
             />
           </Item>
 
-          {/* 3D模型文件（必传） */}
+          {/* 模型文件上传 */}
           <Item
             name="modelFile"
             label="3D模型文件"
@@ -451,7 +470,7 @@ const MaterialMarket = () => {
               name="modelFile"
               beforeUpload={beforeUpload}
               showUploadList={false}
-              accept=".glb" // 仅允许选择glb文件
+              accept=".glb"
             >
               <Button icon={<PlusOutlined />}>选择GLB文件（≤50MB）</Button>
             </Upload>

@@ -1,6 +1,7 @@
 @import '../../styles/variables.scss';
 
 .model-lab {
+  // 加载状态样式
   &__loading {
     height: calc(100vh - $header-height - $footer-height - 60px);
     display: flex;
@@ -8,6 +9,7 @@
     justify-content: center;
   }
 
+  // 空状态样式
   &__empty-state {
     height: calc(100vh - $header-height - $footer-height - 60px);
     display: flex;
@@ -15,6 +17,7 @@
     justify-content: center;
   }
 
+  // 空状态内容区样式
   &__empty-content {
     text-align: center;
     padding: 40px;
@@ -23,6 +26,7 @@
     box-shadow: $card-shadow;
   }
 
+  // 顶部工具栏样式
   &__toolbar {
     display: flex;
     justify-content: space-between;
@@ -34,35 +38,42 @@
     margin-bottom: 24px;
   }
 
+  // 模型信息容器样式
   &__model-info {
     flex: 1;
   }
 
+  // 模型名称样式
   &__model-name {
     font-size: 20px;
     margin: 0 0 8px 0;
   }
 
+  // 模型标签容器样式
   &__model-tags {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
   }
 
+  // 单个模型标签样式
   &__model-tag {
     font-size: 12px !important;
   }
 
+  // 操作按钮容器样式
   &__actions {
     display: flex;
     align-items: center;
     gap: 8px;
   }
 
+  // 操作按钮样式
   &__action-btn {
     margin: 0 !important;
   }
 
+  // 分隔线样式
   &__divider {
     width: 1px;
     height: 24px;
@@ -70,18 +81,21 @@
     margin: 0 8px;
   }
 
+  // 主内容区容器样式
   &__container {
     display: flex;
     gap: 24px;
     height: calc(100vh - $header-height - $footer-height - 160px);
   }
 
+  // 预览区样式
   &__preview {
     flex: 2;
     display: flex;
     flex-direction: column;
   }
 
+  // 预览卡片样式
   &__preview-card {
     flex: 1;
     display: flex;
@@ -89,6 +103,7 @@
     overflow: hidden;
   }
 
+  // 预览控制栏样式
   &__preview-controls {
     display: flex;
     align-items: center;
@@ -97,10 +112,12 @@
     margin-bottom: 16px;
   }
 
+  // 预览控制按钮样式
   &__preview-control-btn {
     margin-right: 8px !important;
   }
 
+  // 画布容器样式
   &__canvas-container {
     flex: 1;
     border-radius: 4px;
@@ -108,12 +125,14 @@
     background-color: #f5f5f5;
   }
 
+  // 编辑器区域样式
   &__editor {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
 
+  // 编辑器标签页样式
   &__editor-tabs {
     flex: 1;
     display: flex;
@@ -124,12 +143,14 @@
     overflow: hidden;
   }
 
+  // 编辑器内容区域样式
   &__editor-content {
     padding: 16px;
     overflow-y: auto;
     flex: 1;
   }
 
+  // 编辑器项样式
   &__editor-item {
     margin-bottom: 24px;
 
@@ -138,6 +159,7 @@
     }
   }
 
+  // 编辑器标签样式
   &__editor-label {
     display: block;
     font-size: 14px;
@@ -146,6 +168,7 @@
     color: $text-color;
   }
 
+  // 编辑器描述文本样式
   &__editor-description {
     margin: 0;
     font-size: 14px;
@@ -153,6 +176,7 @@
     line-height: 1.5;
   }
 
+  // 编辑器子项样式
   &__editor-subitem {
     margin-bottom: 16px;
 
@@ -161,6 +185,7 @@
     }
   }
 
+  // 编辑器子标签样式
   &__editor-sublabel {
     display: block;
     font-size: 12px;
@@ -168,32 +193,38 @@
     margin-bottom: 8px;
   }
 
+  // 标签容器样式
   &__tags-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
   }
 
+  // 标签列表样式
   &__tags {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
 
+  // 单个标签样式
   &__tag {
     cursor: pointer;
   }
 
+  // 添加标签区域样式
   &__add-tag {
     display: flex;
     gap: 8px;
   }
 
+  // 添加注释区域样式
   &__add-annotation {
     display: flex;
     gap: 8px;
   }
 
+  // 注释列表样式
   &__annotations-list {
     display: flex;
     flex-direction: column;
@@ -201,6 +232,7 @@
     margin-top: 8px;
   }
 
+  // 单个注释项样式
   &__annotation-item {
     display: flex;
     justify-content: space-between;
@@ -221,6 +253,7 @@
     }
   }
 
+  // 注释文本样式
   &__annotation-text {
     flex: 1;
     white-space: nowrap;
@@ -228,17 +261,20 @@
     text-overflow: ellipsis;
   }
 
+  // 注释操作按钮容器样式
   &__annotation-actions {
     display: flex;
     gap: 8px;
   }
 
+  // 注释编辑区域样式
   &__annotation-edit {
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px dashed $border-color;
   }
 
+  // 颜色选择器样式
   &__color-picker {
     width: 100%;
     height: 32px;
@@ -247,6 +283,7 @@
     cursor: pointer;
   }
 
+  // 动画列表样式
   &__animations-list {
     display: flex;
     flex-direction: column;
@@ -254,6 +291,7 @@
     margin-top: 8px;
   }
 
+  // 单个动画项样式
   &__animation-item {
     display: flex;
     justify-content: space-between;
@@ -274,31 +312,37 @@
     }
   }
 
+  // 动画信息容器样式
   &__animation-info {
     flex: 1;
   }
 
+  // 动画名称样式
   &__animation-name {
     font-weight: 500;
     margin-bottom: 4px;
   }
 
+  // 动画类型样式
   &__animation-type {
     font-size: 12px;
     color: $text-light-color;
   }
 
+  // 动画操作按钮容器样式
   &__animation-actions {
     display: flex;
     gap: 8px;
   }
 
+  // 动画编辑区域样式
   &__animation-edit {
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px dashed $border-color;
   }
 
+  // 空状态文本样式
   &__empty-text {
     color: $text-light-color;
     text-align: center;

@@ -4,7 +4,7 @@ import { UserOutlined, LockOutlined, PhoneOutlined } from '@ant-design/icons';
 import request from '../../utils/request';
 import './Auth.scss';
 
-// 1. 学科/学段选项配置（默认值设为"other"，匹配需求）
+// 学科选项配置
 const subjectOptions = [
   { key: 'math', label: '数学' },
   { key: 'physics', label: '物理' },
@@ -15,27 +15,29 @@ const subjectOptions = [
   { key: 'english', label: '英语' },
   { key: 'history', label: '历史' },
   { key: 'politics', label: '政治' },
-  { key: 'other', label: '其他' } // 默认选中项
+  { key: 'other', label: '其他' }
 ];
+
+// 学段选项配置
 const gradeOptions = [
   { key: 'primary', label: '小学' },
   { key: 'junior', label: '初中' },
   { key: 'senior', label: '高中' },
   { key: 'college', label: '大学' },
-  { key: 'other', label: '其他' } // 默认选中项
+  { key: 'other', label: '其他' }
 ];
 
-// 2. 表单值类型（严格匹配接口文档注册参数，默认值设为"other"）
+// 注册表单数据结构
 interface RegisterFormValues {
-  phone: string;
-  name: string;
-  subject: string; // 默认"other"（接口文档要求非空）
-  grade: string; // 默认"other"（接口文档要求非空）
-  password: string;
-  confirmPassword: string;
+  phone: string;  // 手机号
+  name: string;  // 姓名
+  subject: string;  // 学科（默认other）
+  grade: string;  // 学段（默认other）
+  password: string;  // 密码
+  confirmPassword: string;  // 确认密码
 }
 
-// 3. 表单错误提示类型
+// 注册表单错误信息结构
 interface FormErrors {
   phone: string;
   name: string;
@@ -45,10 +47,11 @@ interface FormErrors {
   confirmPassword: string;
 }
 
+// 组件属性定义
 interface RegisterModalProps {
-  visible: boolean;
-  onCancel: () => void;
-  onSwitchToLogin: () => void;
+  visible: boolean;  // 控制显示
+  onCancel: () => void;  // 关闭回调
+  onSwitchToLogin: () => void;  // 切换到登录的回调
 }
 
 const RegisterModal: React.FC<RegisterModalProps> = ({ 
@@ -56,19 +59,20 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
   onCancel, 
   onSwitchToLogin 
 }) => {
+  // 注册请求状态
   const [loading, setLoading] = useState(false);
 
-  // 表单值状态（默认选中"other"，匹配需求）
+  // 表单数据状态（默认选择"其他"）
   const [formValues, setFormValues] = useState<RegisterFormValues>({
     phone: '',
     name: '',
-    subject: 'other', // 学科默认"其他"
-    grade: 'other', // 学段默认"其他"
+    subject: 'other',
+    grade: 'other',
     password: '',
     confirmPassword: ''
   });
 
-  // 表单错误状态
+  // 表单错误信息状态
   const [formErrors, setFormErrors] = useState<FormErrors>({
     phone: '',
     name: '',
@@ -78,14 +82,17 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     confirmPassword: ''
   });
 
-  // 4. 弹窗关闭时重置表单
+  /**
+   * 弹窗关闭时重置表单
+   * 恢复默认值，清除错误提示
+   */
   useEffect(() => {
     if (!visible) {
       setFormValues({
         phone: '',
         name: '',
-        subject: 'other', // 重置后仍默认"其他"
-        grade: 'other', // 重置后仍默认"其他"
+        subject: 'other',
+        grade: 'other',
         password: '',
         confirmPassword: ''
       });
@@ -100,7 +107,12 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     }
   }, [visible]);
 
-  // 5. 单个字段校验（严格遵循接口文档规则）
+  /**
+   * 单个字段校验
+   * @param field 字段名
+   * @param value 字段值
+   * @returns 错误提示文本
+   */
   const validateField = (field: keyof RegisterFormValues, value: string): string => {
     const phoneReg = /^1[3-9]\d{9}$/;
     const trimmedValue = value.trim();
@@ -115,10 +127,10 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
         if (trimmedValue.length < 2 || trimmedValue.length > 10) return '姓名长度需在2-10位之间';
         return '';
       case 'subject':
-        if (!trimmedValue) return '请选择学科'; // 接口文档要求非空（默认"other"已满足，此警告仅极端情况触发）
+        if (!trimmedValue) return '请选择学科';
         return '';
       case 'grade':
-        if (!trimmedValue) return '请选择学段'; // 同理，默认"other"已满足
+        if (!trimmedValue) return '请选择学段';
         return '';
       case 'password':
         if (!trimmedValue) return '请设置密码';
@@ -133,9 +145,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     }
   };
 
-  // 6. 字段值变化处理
+  /**
+   * 表单值变化处理
+   * @param field 字段名
+   * @param value 新值
+   */
   const handleValueChange = (field: keyof RegisterFormValues, value: string) => {
     setFormValues(prev => ({ ...prev, [field]: value }));
+    // 密码变化时清除确认密码的错误提示
     if (field === 'password') {
       setFormErrors(prev => ({ ...prev, confirmPassword: '' }));
     } else if (formErrors[field] && !value.trim()) {
@@ -143,13 +160,19 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     }
   };
 
-  // 7. 字段失焦校验
+  /**
+   * 字段失焦校验
+   * @param field 字段名
+   */
   const handleFieldBlur = (field: keyof RegisterFormValues) => {
     const errorMsg = validateField(field, formValues[field]);
     setFormErrors(prev => ({ ...prev, [field]: errorMsg }));
   };
 
-  // 8. 全表单校验
+  /**
+   * 全表单校验
+   * @returns 是否通过校验
+   */
   const validateForm = (): boolean => {
     const errors: FormErrors = {
       phone: validateField('phone', formValues.phone),
@@ -163,33 +186,37 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
     return Object.values(errors).every(msg => !msg);
   };
 
-  // 9. 注册逻辑（与接口文档对接）
+  /**
+   * 注册处理函数
+   * 校验通过后调用注册接口
+   */
   const handleRegister = async () => {
     try {
       const isFormValid = validateForm();
       if (!isFormValid) return;
 
-      // 整理接口参数（仅传递接口文档要求的字段）
+      // 整理注册参数（去除空格）
       const registerParams = {
         phone: formValues.phone.trim(),
         name: formValues.name.trim(),
-        subject: formValues.subject.trim(), // 传递默认"other"或用户选择值
-        grade: formValues.grade.trim(), // 传递默认"other"或用户选择值
+        subject: formValues.subject.trim(),
+        grade: formValues.grade.trim(),
         password: formValues.password.trim()
       };
-      console.log('校验通过的注册参数:', registerParams);
 
       setLoading(true);
-      await request.post('/api/user/register', registerParams); // 调用接口文档注册接口
+      // 调用注册接口
+      await request.post('/api/user/register', registerParams);
 
       message.success('注册成功，请登录');
       onCancel();
-      onSwitchToLogin();
+      onSwitchToLogin();  // 切换到登录界面
     } catch (error: any) {
+      // 错误处理
       if (error.response?.status === 409) {
-        message.error('该手机号已注册，请直接登录'); // 接口文档409状态
+        message.error('该手机号已注册，请直接登录');
       } else if (error.response?.status === 400) {
-        message.error(error.message || '参数不合法，请检查输入'); // 接口文档400状态
+        message.error(error.message || '参数不合法，请检查输入');
       } else {
         message.error('注册失败，请重试');
       }
@@ -208,7 +235,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
       className="auth-modal"
     >
       <div className="auth-form">
-        {/* 1. 手机号（添加必填星号） */}
+        {/* 手机号输入 */}
         <div className="auth-form-item">
           <label className="auth-form-label">
             <span className="required-star">*</span> 手机号
@@ -225,7 +252,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           {formErrors.phone && <div className="auth-form-warning">{formErrors.phone}</div>}
         </div>
 
-        {/* 2. 姓名（添加必填星号） */}
+        {/* 姓名输入 */}
         <div className="auth-form-item">
           <label className="auth-form-label">
             <span className="required-star">*</span> 姓名
@@ -241,16 +268,16 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           {formErrors.name && <div className="auth-form-warning">{formErrors.name}</div>}
         </div>
 
-        {/* 3. 学科+学段（一行显示+默认"其他"+必填星号） */}
+        {/* 学科和学段选择（同行显示） */}
         <div className="auth-form-row">
-          {/* 学科下拉框 */}
+          {/* 学科选择 */}
           <div className="auth-form-col">
             <label className="auth-form-label">
               <span className="required-star">*</span> 所属学科
             </label>
             <Select
               placeholder="请选择学科"
-              value={formValues.subject} // 默认"other"
+              value={formValues.subject}
               onChange={(value) => handleValueChange('subject', value)}
               onBlur={() => handleFieldBlur('subject')}
               className={`auth-form-select ${formErrors.subject ? 'auth-form-input-error' : ''}`}
@@ -264,14 +291,14 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
             {formErrors.subject && <div className="auth-form-warning">{formErrors.subject}</div>}
           </div>
 
-          {/* 学段下拉框 */}
+          {/* 学段选择 */}
           <div className="auth-form-col">
             <label className="auth-form-label">
               <span className="required-star">*</span> 所属学段
             </label>
             <Select
               placeholder="请选择学段"
-              value={formValues.grade} // 默认"other"
+              value={formValues.grade}
               onChange={(value) => handleValueChange('grade', value)}
               onBlur={() => handleFieldBlur('grade')}
               className={`auth-form-select ${formErrors.grade ? 'auth-form-input-error' : ''}`}
@@ -286,7 +313,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           </div>
         </div>
 
-        {/* 4. 密码（添加必填星号） */}
+        {/* 密码设置 */}
         <div className="auth-form-item">
           <label className="auth-form-label">
             <span className="required-star">*</span> 设置密码
@@ -304,7 +331,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           <div className="auth-form-hint">密码长度为6-20位字符</div>
         </div>
 
-        {/* 5. 确认密码（添加必填星号） */}
+        {/* 确认密码 */}
         <div className="auth-form-item">
           <label className="auth-form-label">
             <span className="required-star">*</span> 确认密码
@@ -321,7 +348,7 @@ const RegisterModal: React.FC<RegisterModalProps> = ({
           {formErrors.confirmPassword && <div className="auth-form-warning">{formErrors.confirmPassword}</div>}
         </div>
 
-        {/* 6. 按钮区域 */}
+        {/* 按钮区域 */}
         <div className="auth-form-footer">
           <Button 
             onClick={() => {

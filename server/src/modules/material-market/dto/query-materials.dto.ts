@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * 3D素材列表查询参数
+ * 用于分页查询素材，支持多条件筛选和排序
  */
 export class QueryMaterialsDto {
   @ApiProperty({ description: '页码（从0开始）', default: 0 })

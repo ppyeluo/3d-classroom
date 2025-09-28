@@ -6,8 +6,9 @@ import { UserService } from '../user/services/user.service';
 import { UserEntity } from '../user/entities/user.entity';
 
 /**
- * JWT认证策略（Passport）
- * 参考《立体课堂》需求文档3.3安全性需求的用户认证要求
+ * JWT认证策略实现
+ * 基于Passport的JWT认证逻辑，负责验证请求中的JWT令牌
+ * 并从令牌中提取用户信息进行有效性校验
  */
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,30 +17,35 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private userService: UserService
   ) {
     super({
-      // 从Authorization头提取Bearer Token
+      // 从请求头的Authorization字段中提取Bearer Token
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: false, // 不忽略令牌过期（过期时自动抛出401）
-      // 密钥与受众/签发者校验（与JWT配置一致）
+      // 不忽略令牌过期，过期时Passport会自动抛出401错误
+      ignoreExpiration: false,
+      // JWT验证密钥，从配置中获取
       secretOrKey: configService.get<string>('JWT_SECRET'),
+      // 验证令牌的受众，需与签发时一致
       audience: configService.get<string>('JWT_AUDIENCE'),
+      // 验证令牌的签发者，需与签发时一致
       issuer: configService.get<string>('JWT_ISSUER')
     });
   }
 
   /**
-   * 令牌验证通过后，查询用户信息（挂载到req.user）
-   * @param payload JWT解码后的 payload（包含userId）
+   * 令牌验证通过后的后续处理
+   * 从令牌 payload 中提取用户ID，查询数据库获取完整用户信息
+   * @param payload JWT解码后的负载数据，包含用户标识sub
+   * @returns 用户实体信息，会被自动挂载到请求对象的user属性上
    */
   async validate(payload: { sub: string }): Promise<UserEntity> {
-    // 从payload提取用户ID（sub字段为JWT标准用户标识）
+    // 通过sub字段（用户ID）查询用户信息
     const user = await this.userService.findById(payload.sub);
 
-    // 验证用户状态（禁用用户无法登录）
+    // 校验用户状态：用户不存在或已被禁用时拒绝访问
     if (!user || !user.isEnabled) {
       throw new UnauthorizedException('用户不存在或已禁用');
     }
 
-    // 返回用户信息（会自动挂载到Request对象的user属性）
+    // 返回用户信息，供后续业务逻辑使用
     return user;
   }
 }

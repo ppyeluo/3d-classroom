@@ -12,18 +12,17 @@ import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
-    // 1. 注册实体
+    // 注册实体
     TypeOrmModule.forFeature([ModelTaskEntity]),
-    // 2. 注册任务队列
+    // 注册任务队列
     BullModule.registerQueue({
       name: MODEL_GENERATE_QUEUE,
     }),
-    // 3. 导入依赖模块
     UserModule,
     AuthModule,
   ],
   controllers: [ModelTaskController], // 注册控制器
   providers: [ModelTaskService, Tripo3dService, ModelQueueProcessor], // 注册服务与处理器
-  exports: [ModelTaskService], // 导出服务（如需外部调用）
+  exports: [ModelTaskService], // 导出服务
 })
 export class ModelGenerateModule {}

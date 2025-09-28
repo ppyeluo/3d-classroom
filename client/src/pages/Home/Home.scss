@@ -1,9 +1,11 @@
-// Home.scss
+@import "../../styles/variables.scss";
+
 .home {
   width: 100%;
   overflow: hidden;
   position: relative;
   
+  // 确保标题区和功能卡片在背景之上
   .home__title-area,
   .home__features-cards {
     position: relative;
@@ -11,12 +13,14 @@
   }
 }
 
+// 标题区域样式
 .home__title-area {
   padding: 60px 0;
   color: #fff;
   flex-shrink: 0;
 }
 
+// 标题容器布局
 .home__title-container {
   display: flex;
   flex-wrap: wrap;
@@ -25,6 +29,7 @@
   gap: 32px;
 }
 
+// 标题内容区域
 .home__title-content {
   flex: 1;
   min-width: 300px;
@@ -33,6 +38,7 @@
   flex-direction: column;
 }
 
+// 标题组合布局
 .home__title-group {
   display: flex;
   align-items: center;
@@ -63,27 +69,29 @@
   }
 }
 
+// 文本内容样式
 .home__text-content {
   display: flex;
   flex-direction: column;
   align-items: baseline;
   gap: 8px;
   color:#fff;
+  // 文字阴影效果增强视觉层次
  text-shadow: 
         -3px -3px 3px rgba(44, 153, 255,.7), /* 左上深色阴影 */
         1px 1px 1px rgba(255, 255, 255, 0.8); /* 右下浅色高光 */
 }
 
+// 主标题样式
 .home__main-title {
   font-size: 60px;
   font-weight: 800;
   line-height: 1.2;
   margin: 0;
-font-family: 
-    'SimSun',         /* 中文字体：宋体 */
-    serif;
+  font-family: 'SimSun', serif; // 宋体显示中文
 }
 
+// 副标题样式
 .home__sub-title {
   font-size: 24px;
   font-weight: 500;
@@ -92,24 +100,28 @@ font-family:
   margin: 0;
   font-family: 'Great Vibes', cursive;
 }
-  .home__title{
-    padding-right: 2em;
-    position: relative;
-    border-bottom: 1.5px solid #E76F00;
-  }
-  .home__title::after {
-    content: '';
-    position: absolute;
-    left: 98%; /* 定位在边框末端 */
-    bottom: -6px; /* 垂直居中对齐边框 */
-    width: 0;
-    height: 0;
-    /* 向右的箭头 */
-    border-top: 6px solid transparent;
-    border-bottom: 6px solid transparent;
-    border-left: 6px solid #E76F00; /* 箭头颜色与边框一致 */
-    margin-left: 5px; /* 箭头与边框的间距 */
+
+// 标题装饰线与箭头
+.home__title{
+  padding-right: 2em;
+  position: relative;
+  border-bottom: 1.5px solid #E76F00;
 }
+.home__title::after {
+  content: '';
+  position: absolute;
+  left: 98%; /* 定位在边框末端 */
+  bottom: -6px; /* 垂直居中对齐边框 */
+  width: 0;
+  height: 0;
+  // 向右的箭头
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid #E76F00; /* 箭头颜色与边框一致 */
+  margin-left: 5px; /* 箭头与边框的间距 */
+}
+
+// 辅助描述文本
 .home__assistant-desc {
   font-size: 20px;
   opacity: 0.95;
@@ -117,9 +129,10 @@ font-family:
   max-width: 600px;
   color: #fff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    font-family: 'Great Vibes', cursive;
+  font-family: 'Great Vibes', cursive;
 }
 
+// 按钮容器
 .home__cta-button {
   display: flex;
   align-items: center;
@@ -132,177 +145,235 @@ font-family:
   }
 }
 
+// 开始按钮样式
 .home__start-button {
-    position: relative;
-    z-index: 1;
-    overflow: hidden;
-    font-family: sans-serif;
-    font-weight: 600;
-    font-size: 2em;
-    padding: 0.75em 1em;
-    color: #E76F00;
-    border: 0.15em solid #E76F00;
-    border-radius: 2em;
-    transition: all 0.4s ease-in-out;
-    cursor: pointer;
-    
-    font-family: 'Great Vibes', cursive;
-    /* 光圈阴影效果 */
-    box-shadow: 
-        0 0 10px rgba(24, 144, 255, 0.3),
-        0 0 20px rgba(24, 144, 255, 0.2),
-        0 0 30px rgba(24, 144, 255, 0.1),
-        inset 0 0 10px rgba(24, 144, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  font-weight: 600;
+  font-size: 2em;
+  padding: 0.75em 1em;
+  color: #E76F00;
+  border: 0.15em solid #E76F00;
+  border-radius: 2em;
+  transition: all 0.4s ease-in-out;
+  cursor: pointer;
+  
+  font-family: 'Great Vibes', cursive;
+  // 光圈阴影效果
+  box-shadow: 
+      0 0 10px rgba(24, 144, 255, 0.3),
+      0 0 20px rgba(24, 144, 255, 0.2),
+      0 0 30px rgba(24, 144, 255, 0.1),
+      inset 0 0 10px rgba(24, 144, 255, 0.1);
 
-    /* 添加动画效果 */
-    animation: pulseGlow 2s ease-in-out infinite alternate;
+  // 添加动画效果
+  animation: pulseGlow 2s ease-in-out infinite alternate;
 
-    &:before,
-    &:after {
-        content: '';
-        position: absolute;
-        top: -1.5em;
-        z-index: -1;
-        width: 200%;
-        aspect-ratio: 1;
-        border: none;
-        border-radius: 40%;
-        background-color: rgba(24, 144, 255, 0.25);
-        transition: 4s;
-    }
+  // 背景光圈效果
+  &:before,
+  &:after {
+      content: '';
+      position: absolute;
+      top: -1.5em;
+      z-index: -1;
+      width: 200%;
+      aspect-ratio: 1;
+      border: none;
+      border-radius: 40%;
+      background-color: rgba(24, 144, 255, 0.25);
+      transition: 4s;
+  }
 
-    &:before {
-        left: -80%;
-        transform: translate3d(0, 5em, 0) rotate(-340deg);
-    }
+  &:before {
+      left: -80%;
+      transform: translate3d(0, 5em, 0) rotate(-340deg);
+  }
 
-    &:after {
-        right: -80%;
-        transform: translate3d(0, 5em, 0) rotate(390deg);
-    }
+  &:after {
+      right: -80%;
+      transform: translate3d(0, 5em, 0) rotate(390deg);
+  }
 
-    &:hover,
-    &:focus {
-        color: white;
-        /* 悬停时增强光圈效果 */
-        box-shadow: 
-            0 0 20px rgba(24, 144, 255, 0.6),
-            0 0 40px rgba(24, 144, 255, 0.4),
-            0 0 60px rgba(24, 144, 255, 0.2),
-            inset 0 0 15px rgba(24, 144, 255, 0.2);
-        
-        /* 悬停时加快动画速度 */
-        animation: pulseGlowHover 1s ease-in-out infinite alternate;
-    }
+  // 悬停效果
+  &:hover,
+  &:focus {
+      color: white;
+      // 悬停时增强光圈效果
+      box-shadow: 
+          0 0 20px rgba(24, 144, 255, 0.6),
+          0 0 40px rgba(24, 144, 255, 0.4),
+          0 0 60px rgba(24, 144, 255, 0.2),
+          inset 0 0 15px rgba(24, 144, 255, 0.2);
+      
+      // 悬停时加快动画速度
+      animation: pulseGlowHover 1s ease-in-out infinite alternate;
+  }
 
-    &:hover:before,
-    &:hover:after,
-    &:focus:before,
-    &:focus:after {
-        transform: none;
-        background-color: rgba(24, 144, 255, 0.75);
-    }
+  &:hover:before,
+  &:hover:after,
+  &:focus:before,
+  &:focus:after {
+      transform: none;
+      background-color: rgba(24, 144, 255, 0.75);
+  }
 }
 
-/* 定义光圈脉动动画 */
+// 定义光圈脉动动画
 @keyframes pulseGlow {
-    0% {
-        box-shadow: 
-            0 0 10px rgba(24, 144, 255, 0.3),
-            0 0 20px rgba(24, 144, 255, 0.2),
-            0 0 30px rgba(24, 144, 255, 0.1),
-            inset 0 0 10px rgba(24, 144, 255, 0.1);
-    }
-    100% {
-        box-shadow: 
-            0 0 15px rgba(24, 144, 255, 0.4),
-            0 0 25px rgba(24, 144, 255, 0.3),
-            0 0 35px rgba(24, 144, 255, 0.2),
-            inset 0 0 12px rgba(24, 144, 255, 0.15);
-    }
+  0% {
+      box-shadow: 
+          0 0 10px rgba(24, 144, 255, 0.3),
+          0 0 20px rgba(24, 144, 255, 0.2),
+          0 0 30px rgba(24, 144, 255, 0.1),
+          inset 0 0 10px rgba(24, 144, 255, 0.1);
+  }
+  100% {
+      box-shadow: 
+          0 0 15px rgba(24, 144, 255, 0.4),
+          0 0 25px rgba(24, 144, 255, 0.3),
+          0 0 35px rgba(24, 144, 255, 0.2),
+          inset 0 0 12px rgba(24, 144, 255, 0.15);
+  }
 }
 
-/* 悬停时的脉动动画 */
+// 悬停时的脉动动画
 @keyframes pulseGlowHover {
-    0% {
-        box-shadow: 
-            0 0 20px rgba(24, 144, 255, 0.6),
-            0 0 40px rgba(24, 144, 255, 0.4),
-            0 0 60px rgba(24, 144, 255, 0.2),
-            inset 0 0 15px rgba(24, 144, 255, 0.2);
-    }
-    100% {
-        box-shadow: 
-            0 0 30px rgba(24, 144, 255, 0.8),
-            0 0 50px rgba(24, 144, 255, 0.5),
-            0 0 70px rgba(24, 144, 255, 0.3),
-            inset 0 0 20px rgba(24, 144, 255, 0.3);
-    }
+  0% {
+      box-shadow: 
+          0 0 20px rgba(24, 144, 255, 0.6),
+          0 0 40px rgba(24, 144, 255, 0.4),
+          0 0 60px rgba(24, 144, 255, 0.2),
+          inset 0 0 15px rgba(24, 144, 255, 0.2);
+  }
+  100% {
+      box-shadow: 
+          0 0 30px rgba(24, 144, 255, 0.8),
+          0 0 50px rgba(24, 144, 255, 0.5),
+          0 0 70px rgba(24, 144, 255, 0.3),
+          inset 0 0 20px rgba(24, 144, 255, 0.3);
+  }
 }
 
+// 按钮图标样式
 .home__start-icon {
   font-size: 26px;
 }
 
+// 功能卡片区域
 .home__features-cards {
   padding: 70px 0;
   flex-shrink: 0;
 }
 
-// // 其余样式保持不变...
-// .home__features-grid {
-//   width: 100%;
-// }
+// 1. 卡片链接容器（解决Link包裹卡片的样式问题）
+.home__feature-card-link {
+  text-decoration: none; // 清除链接默认下划线
+  display: block; // 确保Link全屏包裹卡片
+  width: 27%;
+}
 
-// .home__features-row {
-//   width: 100%;
-// }
+// 2. 功能卡片网格布局（保持响应式）
+.home__features-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+}
 
-// .home__feature-card {
-//   height: 100%;
-//   min-height: 360px;
-//   border-radius: 12px;
-//   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-//   transition: all 0.3s;
-//   padding: 36px 28px;
-//   display: flex;
-//   flex-direction: column;
+// 3. 功能卡片核心样式
+.home__feature-card {
+  height: 400px;
+  // 半透明背景
+  background-color: rgba(132, 204, 153, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); // 兼容Safari
 
-//   &:hover {
-//     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
-//     transform: translateY(-6px);
-//     background: rgba(255, 255, 255, 1);
-//   }
-// }
+  // 顶部两角圆角
+  border-radius: 12px 12px 0 0;
 
-// .home__feature-icon {
-//   width: 72px;
-//   height: 72px;
-//   border-radius: 12px;
-//   background: rgba(24, 144, 255, 0.1);
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   margin-bottom: 28px;
+  // 内边距与基础阴影
+  padding: 32px 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
 
-//   &-inner {
-//     font-size: 36px;
-//     color: #1890ff;
-//   }
-// }
+  // 过渡动画（hover效果平滑切换）
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-// .home__feature-title {
-//   margin-bottom: 20px;
-//   color: rgba(0, 0, 0, 0.85);
-//   font-size: 22px;
-// }
+  // 相对定位（承载顶部光圈）
+  position: relative;
+  overflow: hidden;
 
-// .home__feature-desc {
-//   font-size: 16px;
-//   color: rgba(0, 0, 0, 0.65);
-//   line-height: 1.8;
-//   margin-top: auto;
-// }
+  // 鼠标悬浮效果（增强交互感）
+  &:hover {
+    transform: translateY(-8px) scale(1.03); // 上浮+放大
+    box-shadow: 0 12px 24px rgba(231, 111, 0, 0.2); // 阴影色匹配#E76F00
+    cursor: pointer; // 鼠标变为指针，提示可点击
+  }
+
+  // 顶部光圈
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    // 渐变光圈
+    background: linear-gradient(90deg, #E76F00, #FF9A3C, #FFB76B);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  // hover时展开光圈
+  &:hover::before {
+    transform: scaleX(1);
+  }
+}
+
+// 卡片顶部布局
+.home__featuretop{
+  display: flex;
+  align-items: baseline;
+  gap: 2em;
+}
+
+// 4. 卡片图标容器
+.home__feature-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  // 图标背景色
+  background-color: rgba(24, 144, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+// 5. 卡片图标
+.home__feature-icon-inner {
+  font-size: 28px;
+  color: #1890ff; // 图标主色
+}
+
+// 6. 卡片标题
+.home__feature-title {
+  font-size: 34px !important;
+  font-weight: 500;
+  color: #E76F00 !important;
+  font-family: 'Great Vibes', cursive;
+  opacity: 0.7;
+}
+
+// 7. 卡片描述
+.home__feature-desc {
+  font-size: 20px;
+  color: #E76F00;
+  font-family: 'Great Vibes', cursive;
+  line-height: 1.6;
+  margin-bottom: 0;
+  opacity: 0.5;
+}
 
 // 响应式适配
 @media (max-width: 1200px) {
@@ -373,115 +444,4 @@ font-family:
   .home__sub-title {
     font-size: 18px;
   }
-}
-
-// 1. 卡片链接容器（解决Link包裹卡片的样式问题）
-.home__feature-card-link {
-  text-decoration: none; // 清除链接默认下划线
-  display: block; // 确保Link全屏包裹卡片
-  width: 27%;
-}
-
-// 2. 功能卡片网格布局（保持响应式）
-.home__features-grid {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-around;
-  // display: grid;
-  // grid-template-columns: 1fr;
-  // gap: 24px;
-  // padding: 24px 0;
-  // background-color: #fff;
-  // grid-template-columns: repeat(3, 1fr);
-}
-
-// 3. 功能卡片核心样式
-.home__feature-card {
-  height: 400px;
-  // 核心修改：#E76F00半透明背景（rgba透明度0.15，兼顾美观与可读性）
-  background-color: rgba(132, 204, 153, 0.1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px); // 兼容Safari
-
-  // 顶部两角圆角（下方紧贴浏览器）
-  border-radius: 12px 12px 0 0;
-
-  // 内边距与基础阴影
-  padding: 32px 24px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-
-  // 过渡动画（hover效果平滑切换）
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-  // 相对定位（承载顶部光圈）
-  position: relative;
-  overflow: hidden;
-
-  // 鼠标悬浮效果（增强交互感）
-  &:hover {
-    transform: translateY(-8px) scale(1.03); // 上浮+放大
-    box-shadow: 0 12px 24px rgba(231, 111, 0, 0.2); // 阴影色匹配#E76F00
-    cursor: pointer; // 鼠标变为指针，提示可点击
-  }
-
-  // 顶部光圈（颜色改为#E76F00渐变，匹配背景）
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 4px;
-    // 渐变光圈：#E76F00主色+浅色调和
-    background: linear-gradient(90deg, #E76F00, #FF9A3C, #FFB76B);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  // hover时展开光圈
-  &:hover::before {
-    transform: scaleX(1);
-  }
-}
-.home__featuretop{
-  display: flex;
-  align-items: baseline;
-  gap: 2em;
-}
-// 4. 卡片图标容器（颜色匹配#E76F00）
-.home__feature-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  // 图标背景色：#E76F00浅透明，增强统一感
-  background-color: rgba(24, 144, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-// 5. 卡片图标（颜色改为#E76F00，匹配整体风格）
-.home__feature-icon-inner {
-  font-size: 28px;
-  color: #1890ff; // 图标主色
-}
-
-// 6. 卡片标题（增强对比度，适配#E76F00背景）
-.home__feature-title {
-  font-size: 34px !important;
-  font-weight: 500;
-  color: #E76F00 !important; // 深灰色标题，提升可读性
-  font-family: 'Great Vibes', cursive;
-  opacity: 0.7;
-}
-
-// 7. 卡片描述（适配背景色，确保文字清晰）
-.home__feature-desc {
-  font-size: 20px;
-  color: #E76F00; // 中灰色描述，避免与背景冲突
-  font-family: 'Great Vibes', cursive;
-  line-height: 1.6;
-  margin-bottom: 0;opacity: 0.5;
 }

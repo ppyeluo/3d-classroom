@@ -1,4 +1,3 @@
-// src/modules/model-generate/dto/query-history-models.dto.ts
 import { IsNumber, Min, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 

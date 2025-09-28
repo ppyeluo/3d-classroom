@@ -1,4 +1,3 @@
-// src/modules/model-generate/services/model-queue.processor.ts
 import { Processor, Process } from '@nestjs/bull';
 import { Job } from 'bull';
 import { Logger } from '@nestjs/common';
@@ -10,7 +9,10 @@ export class ModelQueueProcessor {
 
   constructor(private readonly modelTaskService: ModelTaskService) {}
 
-  // 处理轮询任务（参数类型与服务端对齐）
+  /**
+   * 处理任务状态轮询的队列消费者
+   * @param job 队列任务
+   */
   @Process(POLL_TASK_STATUS_JOB)
   async handlePollTaskStatus(job: Job<{
     taskId: string;
@@ -22,7 +24,7 @@ export class ModelQueueProcessor {
     this.logger.log(`开始处理轮询Job | jobId: ${job.id} | taskId: ${taskId} | tripoTaskId: ${tripoTaskId}`);
 
     try {
-      // 调用服务端的轮询处理逻辑
+      // 调用服务层的轮询处理逻辑
       await this.modelTaskService.handlePollTaskStatus(job);
       this.logger.log(`轮询Job处理完成 | jobId: ${job.id} | taskId: ${taskId}`);
     } catch (error) {

@@ -1,10 +1,9 @@
-// src/modules/material-market/dto/create-material.dto.ts
 import { IsString, MaxLength, IsNumber, Min, IsBoolean, IsOptional, IsIn, IsNotEmpty } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { ALLOWED_3D_FORMATS } from '../../../constants/material.constants';
 
 /**
- * 3D素材创建参数（修改后：categoryId、modelFormat、fileSize 非必传）
+ * 3D素材创建参数
  */
 export class CreateMaterialDto {
   @ApiProperty({ description: '素材名称' })
@@ -19,13 +18,13 @@ export class CreateMaterialDto {
   @MaxLength(2000, { message: '素材描述不能超过2000字符' })
   description?: string;
 
-  // 1. categoryId：非必传，默认使用“默认分类ID”
+  // categoryId非必传时，默认使用"默认分类ID"
   @ApiProperty({ description: '所属分类ID（可选，默认：默认分类）', required: false })
   @IsString()
   @IsOptional()
   categoryId?: string;
 
-  // 2. modelFormat：非必传，默认glb，且值需在允许列表内
+  // modelFormat非必传时默认glb，且值需在允许列表内
   @ApiProperty({ 
     description: `3D模型文件格式（可选，默认：glb，支持格式：${ALLOWED_3D_FORMATS.join(', ')}）`, 
     enum: ALLOWED_3D_FORMATS,
@@ -35,9 +34,8 @@ export class CreateMaterialDto {
   @IsString()
   @IsOptional()
   @IsIn(ALLOWED_3D_FORMATS, { message: `模型格式仅支持：${ALLOWED_3D_FORMATS.join(', ')}` })
-  modelFormat?: string = 'glb'; // 默认值：glb
+  modelFormat?: string = 'glb';
 
-  // 3. fileSize：非必传（后续从文件中自动计算）
   @ApiProperty({ description: '素材文件大小（KB，可选，后端自动计算）', required: false })
   @IsNumber()
   @Min(1, { message: '文件大小不能小于1KB' })

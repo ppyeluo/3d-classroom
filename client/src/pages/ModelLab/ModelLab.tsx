@@ -94,7 +94,7 @@ const ModelLab = () => {
   // 加载模型详情
   const fetchModelDetail = async () => {
     if (!modelId) {
-      // 如果没有模型ID，显示空状态
+      // 没有模型ID时显示空状态
       setModel(null);
       setLoading(false);
       return;
@@ -169,16 +169,16 @@ const ModelLab = () => {
     }
   };
 
-  // 初始加载
+  // 初始加载模型
   useEffect(() => {
     fetchModelDetail();
   }, [modelId]);
 
-  // 保存历史记录
+  // 保存操作历史记录
   const saveHistory = () => {
     if (!model) return;
     
-    // 截断历史记录
+    // 截断历史记录，只保留当前操作之前的记录
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(JSON.stringify(model));
     setHistory(newHistory);
@@ -251,6 +251,7 @@ const ModelLab = () => {
     };
     
     setModel(updatedModel);
+    // 若删除的是当前选中的注释，清除选中状态
     if (selectedAnnotation?.id === id) {
       setSelectedAnnotation(null);
     }
@@ -261,6 +262,7 @@ const ModelLab = () => {
   const handleAddAnimation = (type: 'rotate' | 'translate' | 'scale' | 'custom') => {
     if (!model) return;
     
+    // 动画类型与名称映射
     const animationNames = {
       rotate: '旋转动画',
       translate: '平移动画',
@@ -311,6 +313,7 @@ const ModelLab = () => {
     };
     
     setModel(updatedModel);
+    // 若删除的是当前选中的动画，清除选中状态
     if (selectedAnimation?.id === id) {
       setSelectedAnimation(null);
     }
@@ -339,7 +342,7 @@ const ModelLab = () => {
     if (!model) return;
     
     try {
-      // 调用后端接口（预留）
+      // 调用后端接口保存模型（预留）
       await request.put(`/models/${model.id}`, {
         name: model.name,
         description: model.description,
@@ -359,7 +362,7 @@ const ModelLab = () => {
   const handleDownloadModel = () => {
     if (!model) return;
     
-    // 调用后端接口（预留）
+    // 调用后端接口下载模型（预留）
     window.open(`/api/models/${model.id}/download?format=glb`, '_blank');
   };
 
@@ -381,6 +384,7 @@ const ModelLab = () => {
   return (
     <div className="model-lab">
       {loading ? (
+        // 加载状态显示
         <div className="model-lab__loading">
           <Spin size="large" tip="加载模型中..."></Spin>
         </div>
@@ -477,6 +481,7 @@ const ModelLab = () => {
                     style={{ width: 120, marginLeft: 16 }}
                     onChange={(value) => {
                       if (controls) {
+                        // 设置不同视角的目标点
                         if (value === 'front') controls.target.set(0, 0, 0);
                         else if (value === 'side') controls.target.set(2, 0, 0);
                         else if (value === 'top') controls.target.set(0, 2, 0);
@@ -526,7 +531,7 @@ const ModelLab = () => {
                       </Html>
                     ))}
                     
-                    {/* 控制器 */}
+                    {/* 轨道控制器 */}
                     <OrbitControls
                       ref={setControls}
                       enableRotate={true}
@@ -731,6 +736,7 @@ const ModelLab = () => {
                       )}
                     </div>
 
+                    {/* 选中注释时显示编辑区域 */}
                     {selectedAnnotation && (
                       <div className="model-lab__editor-item model-lab__annotation-edit">
                         <label className="model-lab__editor-label">编辑选中注释</label>
@@ -850,6 +856,7 @@ const ModelLab = () => {
                       )}
                     </div>
 
+                    {/* 选中动画时显示编辑区域 */}
                     {selectedAnimation && (
                       <div className="model-lab__editor-item model-lab__animation-edit">
                         <label className="model-lab__editor-label">编辑选中动画</label>
@@ -962,6 +969,7 @@ const ModelLab = () => {
           </div>
         </>
       ) : (
+        // 空状态显示
         <div className="model-lab__empty-state">
           <div className="model-lab__empty-content">
             <h3>未选择模型</h3>

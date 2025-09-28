@@ -1,7 +1,6 @@
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 import { ModelGenerateType } from '../dto/create-model-task.dto';
 
-// 修复：定义任务输出的具体类型
 export interface TaskOutput {
   model?: string;
   base_model?: string;
@@ -49,7 +48,6 @@ export class ModelTaskEntity {
   @Column({ type: 'varchar', length: 20, nullable: true, comment: '生成风格（仅image_to_model任务）' })
   style: string;
 
-  // 修复：指定output的具体类型
   @Column({ 
     type: 'jsonb', 
     nullable: true, 

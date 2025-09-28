@@ -5,7 +5,6 @@ import { UserService } from '../services/user.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 
-// 扩展 Express Request 类型，添加 user 属性
 export interface RequestWithUser extends ExpressRequest {
   user: {
     sub: string;

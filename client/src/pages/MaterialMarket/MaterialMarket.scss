@@ -1,4 +1,4 @@
-@import '../../styles/variables.scss';
+@import "../../styles/variables.scss";
 
 .material-market {
   &__header {
@@ -37,6 +37,7 @@
     margin-top: 24px;
   }
 
+  // 加载状态样式
   &__loading {
     height: 400px;
     display: flex;
@@ -44,6 +45,7 @@
     justify-content: center;
   }
 
+  // 空状态样式
   &__empty {
     height: 400px;
     display: flex;
@@ -56,6 +58,7 @@
     color: $text-light-color;
   }
 
+  // 素材卡片样式
   &__model-card {
     height: 100%;
     border: none !important;
@@ -69,12 +72,14 @@
     }
   }
 
+  // 缩略图容器
   &__model-thumbnail {
     position: relative;
     height: 160px;
     overflow: hidden;
   }
 
+  // 缩略图图片
   &__model-img {
     width: 100%;
     height: 100%;
@@ -86,6 +91,7 @@
     }
   }
 
+  // 卡片操作按钮组
   &__model-actions {
     position: absolute;
     top: 8px;
@@ -94,27 +100,27 @@
     gap: 8px;
   }
 
+  // 操作按钮样式
   &__model-action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    color: $text-color;
-    border: none;
+    // 重置按钮样式
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 
-    &:hover {
+    // 下载图标样式
+    .anticon-download {
+      color: #666;
       background-color: #fff;
+      padding: 5px;
+      border-radius: 50%;
     }
-
-    &--favorite {
-      color: #faad14;
+    &:hover .anticon-download {
+      color: #1890ff;
+      background-color: #faad14;
     }
   }
 
+  // 卡片信息区域
   &__model-info {
     padding: 12px;
   }
@@ -149,6 +155,7 @@
     font-size: 12px !important;
   }
 
+  // 统计信息区域
   &__model-stats {
     display: flex;
     justify-content: space-between;
@@ -156,31 +163,32 @@
     color: $text-light-color;
   }
 
+  // 分页容器
   &__pagination {
     margin-top: 32px;
     text-align: center;
   }
 }
-/* 全局 CSS 文件（如 src/styles/global.css） */
-/* 分页容器类名 + 组件内置类名，确保优先级高于默认样式 */
+
+// 分页组件样式覆盖
 .material-market__pagination .ant-pagination {
-  color: #E76F00; /* 全局字体颜色 */
+  color: #E76F00;
   font-weight: 600;
 }
 
-/* 页码按钮颜色 */
+// 页码按钮样式
 .material-market__pagination .ant-pagination .ant-pagination-item {
   color: #666;
   background-color: #E76F00;
 }
 .material-market__pagination .ant-pagination .ant-pagination-item:hover {
-  color: #1890ff; /* hover 颜色 */
+  color: #1890ff;
 }
 .material-market__pagination .ant-pagination .ant-pagination-item-active {
-  color: #fff; /* 选中状态文字颜色（通常配合背景色） */
+  color: #fff;
 }
 
-/* 上一页/下一页按钮 */
+// 分页导航按钮
 .material-market__pagination .ant-pagination .ant-pagination-prev,
 .material-market__pagination .ant-pagination .ant-pagination-next {
   color: #E76F00;
@@ -189,22 +197,4 @@
 .material-market__pagination .ant-pagination .ant-pagination-prev:hover,
 .material-market__pagination .ant-pagination .ant-pagination-next:hover {
   color: #1890ff;
-}
-.material-market__model-action-btn {
-  // 1. 去掉默认背景和边框
-  background: transparent !important; // 重置背景为透明
-  border: none !important; // 去掉默认边框（若有）
-  box-shadow: none !important; // 去掉默认阴影（若有）
-
-  // 4. 可选：调整图标颜色（默认继承文字颜色，可单独设置）
-  .anticon-download {
-    color: #666; // 默认图标颜色
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 50%;
-  }
-  &:hover .anticon-download {
-    color: #1890ff;
-    background-color: #faad14;
-  }
 }

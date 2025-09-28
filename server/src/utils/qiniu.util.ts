@@ -27,18 +27,17 @@ export class QiniuUtil {
       throw new InternalServerErrorException('七牛云配置缺失，请检查.env文件');
     }
 
-    // 修复：七牛云SDK v7+的正确配置方式
     this.mac = new qiniu.auth.digest.Mac(this.accessKey, this.secretKey);
     this.config = new qiniu.conf.Config();
     
-    // 修复：使用正确的区域配置方法（根据实际区域调整）
+    // 区域配置方法
     // 华东: qiniu.zone.Zone_z0
     // 华北: qiniu.zone.Zone_z1
     // 华南: qiniu.zone.Zone_z2
     // 北美: qiniu.zone.Zone_na0
      this.config = new qiniu.conf.Config({
-      zone: qiniu.zone.Zone_z0, // 根据 bucket 所在区域调整
-    });// 华南区域
+      zone: qiniu.zone.Zone_z0,
+    });
     
     this.uploadManager = new qiniu.form_up.FormUploader(this.config);
   }
@@ -78,7 +77,7 @@ export class QiniuUtil {
         const token = this.getUploadToken(qiniuKey);
         const extra = new qiniu.form_up.PutExtra();
         
-        // 修复：使用流上传方式，避免FormData的类型问题
+        // 使用流上传方式，避免FormData的类型问题
         this.uploadManager.putStream(
           token,
           qiniuKey,

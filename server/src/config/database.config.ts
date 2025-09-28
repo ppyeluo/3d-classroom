@@ -1,16 +1,23 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
-  type: 'postgres',
-  host: configService.get<string>('DB_HOST'),
-  port: configService.get<number>('DB_PORT'),
-  username: configService.get<string>('DB_USER'),
-  password: configService.get<string>('DB_PASSWORD'),
-  database: configService.get<string>('DB_NAME'),
-  entities: [__dirname + '/../**/*.entity{.ts,.js}'], // 自动扫描实体
-  synchronize: configService.get<string>('NODE_ENV') === 'development', // 开发环境自动同步表结构（生产禁用）
-  logging: configService.get<string>('NODE_ENV') === 'development', // 开发环境打印 SQL 日志
-  autoLoadEntities: true,
-  ssl: false, // 本地开发无需 SSL
-});
+export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+  const nodeEnv = configService.get<string>('NODE_ENV', 'development');
+  const isDevelopment = nodeEnv === 'development';
+
+  return {
+    type: 'postgres',
+    host: configService.getOrThrow<string>('DB_HOST'),
+    port: configService.getOrThrow<number>('DB_PORT'),
+    username: configService.getOrThrow<string>('DB_USER'),
+    password: configService.getOrThrow<string>('DB_PASSWORD'),
+    database: configService.getOrThrow<string>('DB_NAME'),
+    entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+    synchronize: isDevelopment,
+    logging: isDevelopment ? ['error', 'warn'] : false,
+    autoLoadEntities: true,
+    ssl: nodeEnv === 'production' ? { rejectUnauthorized: false } : false,
+    retryAttempts: 3,
+    retryDelay: 1000,
+  };
+};

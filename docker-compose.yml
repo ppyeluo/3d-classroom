@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context:./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://47.116.49.82:3000
+    restart: always
+
+  backend:
+    build:
+      context:./backend./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PG_HOST=47.116.49.82
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=ppyeluo
+      - PG_DATABASE=3d_classroom
+      - REDIS_HOST=47.116.49.82
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=
+      version: '3.8'
+    restart: always
+    depends_on:
+      - frontend
+    

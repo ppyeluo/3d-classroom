@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, ForbiddenException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like, QueryBuilder, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 import { MaterialEntity } from '../entities/material.entity';
 import { MaterialCategoryEntity } from '../entities/material-category.entity';
@@ -12,9 +12,9 @@ import { QiniuUtil } from '../../../utils/qiniu.util';
 import { UserService } from '../../user/services/user.service';
 import { DEFAULT_CATEGORY_ID } from 'src/constants/material.constants';
 
-// 七牛云素材存储路径前缀
+// 七牛云素材存储路径前缀，规范文件存储结构
 const QINIU_MATERIAL_PREFIX = 'material-market/';
-// 缩略图尺寸（前端预览用）
+// 缩略图尺寸--前端预览
 const THUMBNAIL_SIZE = '200x200';
 
 @Injectable()
@@ -44,18 +44,18 @@ export class MaterialService {
     modelFormat?: string,
   ): Promise<string> {
     try {
-      // 生成七牛云存储Key（避免文件名重复）
+      // 生成唯一文件名避免冲突，根据文件类型拼接后缀
       const fileName = `${uuidv4()}.${fileType === 'model' ? modelFormat : 'png'}`;
+      // 构建七牛云存储路径，按用户和文件类型分类存储
       const qiniuKey = `${QINIU_MATERIAL_PREFIX}${uploaderId}/${fileType}/${fileName}`;
 
-      // 上传文件到七牛云
+      // 上传文件到七牛云，这里通过base64处理缓冲区文件
       const qiniuUrl = await this.qiniuUtil.uploadModelFromTripo(
-        // 模拟文件URL（七牛工具兼容处理，实际使用文件缓冲区）
         `data:${fileType === 'model' ? 'model/gltf-binary' : 'image/png'};base64,${file.toString('base64')}`,
         qiniuKey,
       );
 
-      // 缩略图添加尺寸处理（七牛云图片处理）
+      // 缩略图添加尺寸处理参数（七牛云图片处理能力）
       if (fileType === 'thumbnail') {
         return `${qiniuUrl}?imageMogr2/thumbnail/${THUMBNAIL_SIZE}`;
       }
@@ -73,17 +73,16 @@ export class MaterialService {
    * @param uploaderId 上传者ID
    * @param createDto 素材基本信息
    * @param modelFile 3D模型文件缓冲区
-   * @param thumbnailFile 缩略图文件缓冲区
    */
  async createMaterial(
         uploaderId: string,
         createDto: CreateMaterialDto,
         modelFile: Buffer
     ): Promise<MaterialEntity> {
-        // 2. 处理 categoryId：为空则使用默认分类ID
+        // 处理分类ID，为空时使用默认分类
         const targetCategoryId = createDto.categoryId || DEFAULT_CATEGORY_ID;
 
-        // 3. 校验分类是否存在且启用（默认分类也需启用）
+        // 校验分类有效性（必须存在且启用）
         const category = await this.categoryRepo.findOne({
             where: { id: targetCategoryId, isEnabled: true },
         });
@@ -91,31 +90,31 @@ export class MaterialService {
             throw new NotFoundException(`素材分类不存在或已禁用（分类ID：${targetCategoryId}）`);
         }
 
-        // 4. 处理 fileSize：为空则从 modelFile 自动计算（1KB = 1024 字节）
+        // 计算文件大小（KB），优先使用DTO传入值，否则自动计算
         const targetFileSize = createDto.fileSize || Math.ceil(modelFile.length / 1024);
 
-        // 5. 处理 modelFormat：使用DTO默认值（glb）
-        const targetModelFormat = createDto.modelFormat; // DTO中已默认glb，无需额外处理
+        // 模型格式使用DTO中定义的默认值（glb）
+        const targetModelFormat = createDto.modelFormat;
 
-        // 6. 校验上传者是否存在（原有逻辑不变）
+        // 校验上传者是否存在
         await this.userService.findById(uploaderId);
 
-        // 7. 上传模型文件（只有模型文件上传了，移除缩略图上传相关逻辑）
+        // 上传模型文件到七牛云
         const modelUrl = await this.uploadFileToQiniu(modelFile, 'model', uploaderId, targetModelFormat);
 
-        // 根据模型文件生成缩略图地址（假设模型文件名类似 xxx.glb，生成对应的 xxx.png 地址，可根据实际情况调整更合理的逻辑）
+        // 根据模型文件URL生成对应的缩略图URL
         const thumbnailUrl = this.generateThumbnailUrl(modelUrl);
 
-        // 8. 创建素材记录（使用处理后的参数）
+        // 构建素材实体并保存
         const material = this.materialRepo.create({
            ...createDto,
             id: uuidv4(),
             uploaderId,
             modelUrl,
             thumbnailUrl,
-            categoryId: targetCategoryId, // 已处理默认分类
-            modelFormat: targetModelFormat, // 已处理默认glb
-            fileSize: targetFileSize, // 已自动计算
+            categoryId: targetCategoryId,
+            modelFormat: targetModelFormat,
+            fileSize: targetFileSize,
             downloadCount: 0,
             viewCount: 0,
             isEnabled: true,
@@ -133,8 +132,11 @@ export class MaterialService {
         }
     }
 
+    /**
+     * 根据模型文件URL生成缩略图URL
+     * 规则：去除模型文件后缀，添加.png作为缩略图后缀
+     */
     private generateThumbnailUrl(modelUrl: string): string {
-        // 简单示例，从文件名中提取基本名称（去除后缀），再拼接上.png 作为缩略图文件名
         const baseFileName = modelUrl.split('.').slice(0, -1).join('.');
         return `${baseFileName}.png`;
     }
@@ -146,16 +148,17 @@ export class MaterialService {
     const { page, pageSize, categoryId, keyword, isFree, sortBy = 'createTime', sortOrder = 'desc' } = queryDto;
     const skip = page * pageSize;
 
-    // 构建查询条件
+    // 构建查询构建器，关联分类表并筛选启用状态的素材
     const queryBuilder: SelectQueryBuilder<MaterialEntity> = this.materialRepo.createQueryBuilder('material')
         .leftJoinAndSelect('material.category', 'category', 'category.isEnabled = true')
         .where('material.isEnabled = true');
-    // 分类筛选
+
+    // 按分类筛选
     if (categoryId) {
       queryBuilder.andWhere('material.categoryId = :categoryId', { categoryId });
     }
 
-    // 关键词筛选（匹配名称或描述）
+    // 关键词搜索（匹配名称或描述）
     if (keyword) {
       queryBuilder.andWhere(
         '(material.name LIKE :keyword OR material.description LIKE :keyword)',
@@ -163,15 +166,15 @@ export class MaterialService {
       );
     }
 
-    // 免费/付费筛选
+    // 按免费/付费筛选
     if (isFree !== undefined) {
       queryBuilder.andWhere('material.isFree = :isFree', { isFree });
     }
 
-    // 排序
+    // 设置排序方式
     queryBuilder.orderBy(`material.${sortBy}`, sortOrder.toUpperCase() as 'ASC' | 'DESC');
 
-    // 执行分页查询
+    // 执行分页查询，只返回需要的字段减少数据传输
     const [list, total] = await queryBuilder
       .select([
         'material.id',
@@ -203,7 +206,7 @@ export class MaterialService {
    * @param userId 当前登录用户ID（用于判断是否为上传者）
    */
   async getMaterialDetail(materialId: string, userId: string): Promise<MaterialDetailResponse> {
-    // 1. 查询素材详情（关联分类）
+    // 查询素材详情并关联分类信息
     const material = await this.materialRepo.findOne({
       where: { id: materialId, isEnabled: true },
       relations: ['category'],
@@ -212,7 +215,7 @@ export class MaterialService {
       throw new NotFoundException('素材不存在或已禁用');
     }
 
-    // 2. 浏览量+1（异步更新，不阻塞返回）
+    // 异步更新浏览量，不阻塞当前请求
     this.materialRepo
       .createQueryBuilder()
       .update(MaterialEntity)
@@ -221,7 +224,7 @@ export class MaterialService {
       .execute()
       .catch((error) => this.logger.error(`素材浏览量更新失败 | materialId: ${materialId}`, error.stack));
 
-    // 3. 判断是否为上传者
+    // 判断当前用户是否为素材上传者
     const isOwner = material.uploaderId === userId;
 
     this.logger.log(`素材详情查询成功 | materialId: ${materialId} | userId: ${userId}`);
@@ -229,7 +232,7 @@ export class MaterialService {
   }
 
   /**
-   * 更新素材信息（仅上传者或管理员可操作）
+   * 更新素材信息（仅上传者可操作）
    * @param materialId 素材ID
    * @param userId 当前登录用户ID
    * @param updateDto 更新参数
@@ -239,18 +242,18 @@ export class MaterialService {
     userId: string,
     updateDto: UpdateMaterialDto,
   ): Promise<MaterialEntity> {
-    // 1. 查询素材是否存在
+    // 检查素材是否存在
     const material = await this.materialRepo.findOne({ where: { id: materialId } });
     if (!material) {
       throw new NotFoundException('素材不存在');
     }
 
-    // 2. 权限校验（仅上传者可更新）
+    // 权限校验：只有上传者能更新
     if (material.uploaderId !== userId) {
       throw new ForbiddenException('无权限更新该素材');
     }
 
-    // 3. 若更新分类，校验分类是否存在
+    // 若更新分类，需校验目标分类有效性
     if (updateDto.categoryId) {
       const category = await this.categoryRepo.findOne({
         where: { id: updateDto.categoryId, isEnabled: true },
@@ -260,7 +263,7 @@ export class MaterialService {
       }
     }
 
-    // 4. 执行更新
+    // 合并更新数据并设置更新时间
     const updatedMaterial = this.materialRepo.merge(material, {
       ...updateDto,
       updateTime: Math.floor(Date.now() / 1000),
@@ -277,17 +280,17 @@ export class MaterialService {
   }
 
   /**
-   * 素材下载（下载量+1，返回模型文件URL）
+   * 素材下载处理（下载量+1，返回模型文件URL）
    * @param materialId 素材ID
    */
   async downloadMaterial(materialId: string): Promise<{ modelUrl: string }> {
-    // 1. 查询素材是否存在且启用
+    // 检查素材是否存在且启用
     const material = await this.materialRepo.findOne({ where: { id: materialId, isEnabled: true } });
     if (!material) {
       throw new NotFoundException('素材不存在或已禁用');
     }
 
-    // 2. 下载量+1
+    // 更新下载量和更新时间
     await this.materialRepo
       .createQueryBuilder()
       .update(MaterialEntity)
@@ -300,7 +303,7 @@ export class MaterialService {
   }
 
   /**
-   * 获取所有启用的素材分类
+   * 获取所有启用的素材分类（按排序权重降序）
    */
   async getEnabledCategories(): Promise<MaterialCategoryEntity[]> {
     const categories = await this.categoryRepo.find({

@@ -7,6 +7,7 @@
   top: 0;
   z-index: 100;
 
+  // 头部主容器，控制整体布局居中
   &__container {
     width: 1200px;
     margin: 0 auto;
@@ -57,6 +58,13 @@
       transition: .8s;
       padding: 0 1em;
 
+      // 禁用状态样式
+      &--disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      // 激活状态样式
       &--active {
         color: #1890ff;
 
@@ -71,6 +79,7 @@
         }
       }
 
+      // 悬停效果
       &:hover {
         color: #1890ff;
       }

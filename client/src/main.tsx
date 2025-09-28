@@ -1,10 +1,10 @@
-// src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AppRouter from './router';
 import { useUserStore } from './store/userStore';
 import request from './utils/request';
-import './styles/global.scss';
+import './styles/global.css';
+import './styles/variables.scss'
 
 // 初始化用户状态（刷新页面后保持登录）
 const initUserState = async () => {

@@ -3,7 +3,7 @@ import Home from '../pages/Home/Home';
 import ModelGenerate from '../pages/ModelGenerate/ModelGenerate';
 import MaterialMarket from '../pages/MaterialMarket/MaterialMarket';
 import ModelLab from '../pages/ModelLab/ModelLab';
-import Layout from '../components/Layout/Layout'; // 全局布局（包含导航栏+页脚）
+import Layout from '../components/Layout/Layout';
 
 const router = createBrowserRouter([
   {

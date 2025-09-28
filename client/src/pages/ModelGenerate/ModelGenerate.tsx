@@ -8,8 +8,7 @@ import { OrbitControls, Html } from '@react-three/drei';
 import { useModelStore, type ModelInfo } from '../../store/modelStore';
 import { useFullscreenState } from '../../store/fullscreenStore';
 import request from '../../utils/request';
-import api from '../../api'; // 导入接口集合
-// 严格遵循接口文档定义的类型
+import api from '../../api';
 import type { 
   UploadImageResponse, 
   CreateModelTaskRequest, 
@@ -33,7 +32,7 @@ const { TabPane } = Tabs;
 const { TextArea } = Input;
 const { Meta } = Card;
 
-// 1. 科目与知识模块配置（非必填，保留完整选项）
+// 科目与知识模块配置
 const subjectConfig = [
   { key: 'chinese', label: '语文', role: '语文老师' },
   { key: 'math', label: '数学', role: '数学老师' },
@@ -46,6 +45,7 @@ const subjectConfig = [
   { key: 'geography', label: '地理', role: '地理老师' }
 ];
 
+// 各科目对应的知识模块
 const subjectTagsConfig = {
   chinese: [
     { key: 'ancient-architecture', label: '古代建筑' },
@@ -105,7 +105,7 @@ const subjectTagsConfig = {
 };
 
 
-// 2. 模型风格配置（与接口文档 ModelStyle 枚举完全匹配）
+// 模型风格配置（与接口文档 ModelStyle 枚举匹配）
 const styleConfig = [
   { key: 'cartoon', label: '卡通风格' },
   { key: 'clay', label: '黏土质感' },
@@ -117,7 +117,7 @@ const styleConfig = [
   { key: 'ancient_bronze', label: '古铜风格' }
 ];
 
-// 3. 3D模型渲染组件（对接接口文档 output 字段的模型地址）
+// 3D模型渲染组件
 const ModelRenderer = ({ modelUrl }: { modelUrl: string }) => {
   const gltf = useLoader(GLTFLoader, modelUrl);
   return (
@@ -128,7 +128,7 @@ const ModelRenderer = ({ modelUrl }: { modelUrl: string }) => {
   );
 };
 
-// 4. 加载中占位组件
+// 模型加载中占位组件
 const ModelLoadingFallback = () => {
   return (
     <group>
@@ -143,14 +143,16 @@ const ModelLoadingFallback = () => {
   );
 };
 
-// 5. 加载动画组件（根据接口文档 TaskStatus 字段显示）
+// 生成状态展示组件
 const GenerateLoading = ({ status, progress }: { status: TaskStatus, progress: number }) => {
+  // 状态文本映射
   const statusTextMap = {
     queued: '任务排队中，等待处理...',
     running: `模型生成中（${progress}%）`,
     success: '生成成功，正在加载模型...',
     failed: '生成失败'
   };
+  
   return (
     <div className="model-generate__loading-container" style={{
       width: '100%',
@@ -201,45 +203,43 @@ const GenerateLoading = ({ status, progress }: { status: TaskStatus, progress: n
 };
 
 const ModelGenerate = () => {
-  
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-
-  // 6. 核心状态（含生成后禁用控制）
+  // 图片上传相关状态
   const [isUploading, setIsUploading] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [imageToken, setImageToken] = useState(''); // 接口文档上传图片返回字段
+  const [imageToken, setImageToken] = useState('');
   const [previewUrl, setPreviewUrl] = useState('');
   
-  // 文字生成模型状态（科目/模块非必填）
+  // 生成模式及参数状态
   const [generateMode, setGenerateMode] = useState<'text' | 'image'>('text');
-  const [subject, setSubject] = useState(''); // 初始空，非必填
-  const [tags, setTags] = useState<string[]>([]); // 初始空，非必填
-  const [description, setDescription] = useState(''); // 文本域内容
+  const [subject, setSubject] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [description, setDescription] = useState('');
   const [style, setStyle] = useState('cartoon');
   
-  // 接口对接与禁用控制状态
+  // 任务状态相关
   const [taskStatus, setTaskStatus] = useState<TaskStatus | null>(null);
   const [taskProgress, setTaskProgress] = useState(0);
   const [modelUrl, setModelUrl] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false); // 控制生成中状态
-  const [hasValidRequest, setHasValidRequest] = useState(false); // 标记有效生成请求
-  const pollTimerRef = useRef<NodeJS.Timeout | null>(null); // 轮询定时器引用
-  // 全屏显示
-  // 7. 历史模型列表相关状态（新增）
-  const [historyModels, setHistoryModels] = useState<HistoryModelItem[]>([]); // 历史模型列表
-  const [historyLoading, setHistoryLoading] = useState(true); // 历史记录加载中
-  const [historyTotal, setHistoryTotal] = useState(0); // 历史记录总条数
-  const [historyPage, setHistoryPage] = useState(0); // 当前页码（默认0，匹配接口）
-  const [historyPageSize, setHistoryPageSize] = useState(5); // 每页数量
-  const [historyFilterType, setHistoryFilterType] = useState<GenerateType | ''>(''); // 生成类型筛选
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [hasValidRequest, setHasValidRequest] = useState(false);
+  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // 历史模型相关状态
+  const [historyModels, setHistoryModels] = useState<HistoryModelItem[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const [historyTotal, setHistoryTotal] = useState(0);
+  const [historyPage, setHistoryPage] = useState(0);
+  const [historyPageSize, setHistoryPageSize] = useState(5);
+  const [historyFilterType, setHistoryFilterType] = useState<GenerateType | ''>('');
 
   const location = useLocation();
   const { currentModel, setCurrentModel, addHistoryModel } = useModelStore();
   const { fullscreen, setFullscreen } = useFullscreenState();
   const [controls, setControls] = useState<any>(null);
 
-  // 8. 从首页跳转参数处理（保留原有逻辑）
+  // 处理从首页跳转带来的参数
   useEffect(() => {
     const state = location.state as any;
     if (state) {
@@ -258,7 +258,7 @@ const navigate = useNavigate();
     }
   }, [location.state, setCurrentModel]);
 
-  // 9. 切换科目重置标签（仅当科目有值时触发）
+  // 切换科目时重置标签
   useEffect(() => {
     if (subject) {
       const defaultTag = subjectTagsConfig[subject as keyof typeof subjectTagsConfig][0].key;
@@ -268,10 +268,12 @@ const navigate = useNavigate();
     }
   }, [subject]);
 
-  // 10. 图片上传（严格对接接口文档）
+  // 图片上传处理
   const beforeUpload = async (file: File) => {
+    // 验证文件类型和大小
     const isImage = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp';
     const isLt10M = file.size / 1024 / 1024 < 10;
+    
     if (!isImage) {
       message.error('仅支持webp/jpeg/png格式');
       return false;
@@ -280,10 +282,12 @@ const navigate = useNavigate();
       message.error('图片大小不能超过10MB');
       return false;
     }
+    
     try {
       setIsUploading(true);
       const formData = new FormData();
       formData.append('file', file);
+      
       const res: UploadImageResponse = await request({
         url: '/api/model-tasks/upload-image',
         method: 'POST',
@@ -293,6 +297,7 @@ const navigate = useNavigate();
         },
         data: formData
       });
+      
       setImageToken(res.imageToken);
       setUploadFile(file);
       setPreviewUrl(URL.createObjectURL(file));
@@ -308,23 +313,26 @@ const navigate = useNavigate();
     }
   };
 
-  // 11. 提示词处理（按需封装）
-const getFinalPrompt = (): string => {
-  if (!subject && tags.length === 0) {
-    return description.trim();
-  }
-  const teacherRole = subject? subjectConfig.find(item => item.key === subject)?.role || '教师' : '教师';
-  const tagLabel = tags.length > 0 
-   ? subjectTagsConfig[subject as keyof typeof subjectTagsConfig].find(item => item.key === tags[0])?.label
-    : '相关';
-  return `我是一名${teacherRole}，正在教授${tagLabel}的课，需要生成一个${description.trim()}模型`;
-};
+  // 构建最终提示词
+  const getFinalPrompt = (): string => {
+    if (!subject && tags.length === 0) {
+      return description.trim();
+    }
+    
+    const teacherRole = subject? subjectConfig.find(item => item.key === subject)?.role || '教师' : '教师';
+    const tagLabel = tags.length > 0 
+     ? subjectTagsConfig[subject as keyof typeof subjectTagsConfig].find(item => item.key === tags[0])?.label
+      : '相关';
+      
+    return `我是一名${teacherRole}，正在教授${tagLabel}的课，需要生成一个${description.trim()}模型`;
+  };
 
-  // 12. 轮询任务详情（严格对接接口文档）
+  // 轮询任务状态
   const startTaskPolling = (taskId: string) => {
     if (!taskId) return;
     if (pollTimerRef.current) clearInterval(pollTimerRef.current);
-    // 接口文档建议3秒轮询一次
+    
+    // 每3秒轮询一次任务状态
     pollTimerRef.current = setInterval(async () => {
       try {
         const res: QueryTaskDetailResponse = await request({
@@ -332,22 +340,27 @@ const getFinalPrompt = (): string => {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         });
+        
         setTaskStatus(res.status);
         setTaskProgress(res.progress);
-        // 任务完成：停止轮询+重置状态
+        
+        // 任务完成时停止轮询
         if (res.status === 'success' || res.status === 'failed') {
           if (pollTimerRef.current) {
             clearInterval(pollTimerRef.current);
             pollTimerRef.current = null;
           }
+          
           setIsGenerating(false);
           setHasValidRequest(false);
+          
           if (res.status === 'success') {
             const realModelUrl = res.output.qiniu_output?.pbr_model || res.output.pbr_model;
             fetchHistoryModels();
+            
             if (realModelUrl) {
               setModelUrl(realModelUrl);
-              // 构造历史模型数据
+              // 构造模型信息并更新状态
               const newModel: ModelInfo = {
                 id: taskId,
                 name: generateMode === 'text' 
@@ -362,6 +375,7 @@ const getFinalPrompt = (): string => {
                 modelUrl: realModelUrl,
                 createTime: new Date().toISOString()
               };
+              
               setCurrentModel(newModel);
               addHistoryModel(newModel);
               message.success('模型加载完成');
@@ -387,21 +401,21 @@ const getFinalPrompt = (): string => {
           message.error('令牌无效或已过期，请重新登录');
           localStorage.removeItem('token');
           navigate('/');
-        } else {
-          // message.error('查询任务进度失败，3秒后重试');
         }
       }
     }, 3000);
   };
 
-  // 13. 创建模型任务（严格对接接口文档）
+  // 创建模型生成任务
   const handleGenerateModel = async () => {
+    // 参数验证
     let isParamValid = false;
     if (generateMode === 'text') {
       isParamValid = !!description.trim();
     } else if (generateMode === 'image') {
       isParamValid = !!imageToken;
     }
+    
     if (!isParamValid) {
       message.warning(
         generateMode === 'text' 
@@ -410,13 +424,15 @@ const getFinalPrompt = (): string => {
       );
       return;
     }
+    
     try {
       setIsGenerating(true);
       setHasValidRequest(true);
       setTaskStatus('queued');
       setTaskProgress(0);
       setModelUrl('');
-      // 构造接口请求参数
+      
+      // 构建请求参数
       const taskParams: CreateModelTaskRequest = {
         generateType: generateMode === 'text' ? 'text_to_model' : 'image_to_model',
         prompt: generateMode === 'text' ? getFinalPrompt() : undefined,
@@ -424,6 +440,7 @@ const getFinalPrompt = (): string => {
         style: generateMode === 'image' ? style : undefined,
         modelVersion: 'v2.5-20250123'
       };
+      
       const res: CreateModelTaskResponse = await request({
         url: '/api/model-tasks',
         method: 'POST',
@@ -433,12 +450,14 @@ const getFinalPrompt = (): string => {
         },
         data: taskParams
       });
+      
       startTaskPolling(res.tripoTaskId);
       message.info(`任务已创建（ID：${res.id}），进入排队队列`);
     } catch (error: any) {
       setIsGenerating(false);
       setHasValidRequest(false);
       setTaskStatus('failed');
+      
       if (error.response?.status === 403) {
         message.error('用户账号已禁用，无法生成模型');
       } else if (error.response?.status === 500) {
@@ -453,20 +472,20 @@ const getFinalPrompt = (): string => {
     }
   };
 
-  // 14. 移除图片（仅在未生成时允许）
+  // 移除已上传图片
   const handleRemoveImage = () => {
     if (isGenerating) {
       message.warning('模型生成中，暂不允许移除图片');
       return;
     }
+    
     setUploadFile(null);
     setImageToken('');
     setPreviewUrl('');
   };
 
-  // 15. 加载历史模型（新增：适配接口返回格式）
+  // 加载历史模型
   const handleLoadHistoryModel = (model: HistoryModelItem) => {
-    // 转换接口返回格式为页面所需的 ModelInfo
     const modelInfo: ModelInfo = {
       id: model.taskId,
       name: model.generateType === 'text_to_model' 
@@ -481,43 +500,33 @@ const getFinalPrompt = (): string => {
       modelUrl: model.modelUrl,
       createTime: new Date(model.createTime * 1000).toISOString()
     };
-    // 更新页面状态
+    
     setCurrentModel(modelInfo);
     setModelUrl(model.modelUrl);
-    // setDescription(model.prompt || '');
-    // setSubject('');
-    // setTags([model.generateType === 'text_to_model' ? '文本生成' : '图片生成']);
-    // setStyle('cartoon');
-    // setGenerateMode(model.generateType as 'text' | 'image');
-    // // 图片生成模式下重置图片状态
-    // if (model.generateType === 'image_to_model') {
-    //   setUploadFile(null);
-    //   setImageToken('');
-    //   setPreviewUrl('');
-    // }
   };
 
-  // 16. 查询历史模型列表（新增：调用目标接口）
+  // 获取历史模型列表
   const fetchHistoryModels = async () => {
     setHistoryLoading(true);
+    
     try {
-      // 构造接口请求参数
       const params: QueryHistoryModelsParams = {
         page: historyPage,
         pageSize: historyPageSize
       };
+      
       if (historyFilterType) {
         params.generateType = historyFilterType;
       }
-      // 调用历史模型接口（自动携带token）
+      
       const res: QueryHistoryModelsResponse = await api.model.queryHistoryModels(params);
-      // 更新历史记录状态
       setHistoryModels(res.list);
       setHistoryTotal(res.total);
       setHistoryPage(res.page);
       setHistoryPageSize(res.pageSize);
     } catch (error: any) {
       console.error('加载历史模型失败:', error);
+      
       if (error.response?.status === 401) {
         message.error('登录已过期，请重新登录');
         localStorage.removeItem('token');
@@ -532,12 +541,12 @@ const getFinalPrompt = (): string => {
     }
   };
 
-  // 17. 页面初始化/筛选条件变化时加载历史记录
+  // 初始化和筛选条件变化时加载历史记录
   useEffect(() => {
     fetchHistoryModels();
   }, [modelUrl, historyPage, historyPageSize, historyFilterType]);
 
-  // 18. 3D模型控制（保留原有逻辑）
+  // 模型控制功能
   const handleDownload = () => {
     if (controls) controls.reset();
       const link = document.createElement('a');
@@ -546,14 +555,16 @@ const getFinalPrompt = (): string => {
       link.click();
       document.body.removeChild(link);
   };
+  
   const handleResetView = () => {
     if (controls) controls.reset();
   };
-  // 全屏显示
+  
   const handleFullscreen = (value: boolean) => {
     setFullscreen(value)
-  }
-  // 19. 组件卸载时清除轮询（避免内存泄漏）
+  };
+
+  // 组件卸载时清除轮询定时器
   useEffect(() => {
     return () => {
       if (pollTimerRef.current) {
@@ -572,13 +583,7 @@ const getFinalPrompt = (): string => {
           height: '100vh',
         }
       }>
-      <div className="model-generate__container" 
-      // style={{
-      //   display: 'flex',
-      //   gap: 20,
-      //   height: 'calc(100vh - 40px)'
-      // }}
-      >
+      <div className="model-generate__container">
         {/* 左侧：参数设置区 */}
         {!fullscreen && (<div className="model-generate__left" style={{
           position: 'absolute',
@@ -610,6 +615,7 @@ const getFinalPrompt = (): string => {
               <TabPane tab="文字生成模型" key="text" />
               <TabPane tab="图片生成模型" key="image" />
             </Tabs>
+            
             {/* 文字生成参数 */}
             {generateMode === 'text' && (
               <div className="model-generate__text-param" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -639,6 +645,7 @@ const getFinalPrompt = (): string => {
                     {description.length}/200 字符
                   </p>
                 </div>
+                
                 {/* 科目+知识模块 */}
                 <div style={{ display: 'flex', gap: 12 }}>
                   <div style={{ flex: 1 }}>
@@ -686,6 +693,7 @@ const getFinalPrompt = (): string => {
                 </div>
               </div>
             )}
+            
             {/* 图片生成参数 */}
             {generateMode === 'image' && (
               <div className="model-generate__image-param" style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -765,13 +773,13 @@ const getFinalPrompt = (): string => {
                     )}
                   </div>
                 </div>
+                
                 {/* 模型风格 */}
                 <div>
                   <label style={{ display: 'block', marginBottom: 8, fontSize: 14, fontWeight: 500 }}>
                     模型风格（可选）
                   </label>
                   <Select
-                    // allowClear
                     value={style}
                     onChange={(value) => setStyle(value as ModelStyle)}
                     style={{ width: '100%' }}
@@ -787,6 +795,7 @@ const getFinalPrompt = (): string => {
                 </div>
               </div>
             )}
+            
             {/* 生成按钮 */}
             <Button
               type="primary"
@@ -805,15 +814,10 @@ const getFinalPrompt = (): string => {
             </Button>
           </Card>
         </div>)}
+        
         {/* 中间：模型展示区 */}
-        <div className="model-generate__middle" style={{
-          // flex: 1,
-          // display: 'flex',
-          // flexDirection: 'column'
-        }}>
-          {/* <Card title="模型展示区" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}> */}
-            {/* 模型控制栏 */}
-        <div style={
+        <div className="model-generate__middle">
+          <div style={
               !fullscreen ? {
                 position: 'absolute',
                 top: '0',
@@ -873,10 +877,10 @@ const getFinalPrompt = (): string => {
                 下载
               </Button>
             </div>
+            
             {/* 模型渲染/加载动画区域 */}
             <div style={{
               height: '100vh',
-              // backgroundColor: 'red'
             }}>
               {hasValidRequest && isGenerating && !modelUrl ? (
                 <GenerateLoading
@@ -920,9 +924,9 @@ const getFinalPrompt = (): string => {
                 </div>
               )}
             </div>
+          </div>
         </div>
-          {/* </Card> */}
-        </div>
+        
         {/* 右侧：历史记录区 */}
         {!fullscreen && (<div className="model-generate__right" style={{
           position: 'absolute',
@@ -932,22 +936,7 @@ const getFinalPrompt = (): string => {
           height: 'calc(100vh - 40px)'
         }}>
           <Card title="历史生成记录" style={{ display: 'flex', flexDirection: "column", height: '100%' }}>
-              {/* 历史记录筛选栏 */}
-              {/* <div className="history-filter-bar" style={{ marginBottom: 16, display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <Select
-                      value={historyFilterType}
-                      onChange={(value) => setHistoryFilterType(value as GenerateType | '')}
-                      style={{ width: '100%' }}
-                      placeholder="筛选生成类型"
-                      disabled={historyLoading}
-                  >
-                      <Option value="">全部类型</Option>
-                      <Option value="text_to_model">文本生成</Option>
-                      <Option value="text_to_model">图片生成</Option>
-                  </Select>
-              </div> */}
-
-              {/* 历史记录内容区，整体设置为flex:1并设置overflow-y为auto实现滚动 */}
+              {/* 历史记录内容区 */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
                   {/* 历史记录列表 */}
                   <List style={{ flex: 1 }}
@@ -962,7 +951,7 @@ const getFinalPrompt = (): string => {
                                   borderBottom: '1px solid #f0f0f0',
                                   padding: 12,
                                   display: 'flex',
-                                  alignItems: 'center', // 垂直居中
+                                  alignItems: 'center',
                               }}
                           >
                               <List.Item.Meta
@@ -984,7 +973,7 @@ const getFinalPrompt = (): string => {
                       )}
                   />
 
-                  {/* 分页控件，固定在底部 */}
+                  {/* 分页控件 */}
                   <div style={{ marginTop: 16, textAlign: 'center', height: '40px' }}>
                       <Pagination
                           current={historyPage + 1}

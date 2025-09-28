@@ -17,6 +17,6 @@ import { AuthModule } from '../auth/auth.module';
   ],
   controllers: [MaterialController],
   providers: [MaterialService],
-  exports: [MaterialService], // 如需外部模块调用，可导出服务
+  exports: [MaterialService], // 导出服务
 })
 export class MaterialMarketModule {}
